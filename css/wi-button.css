@@ -1,0 +1,27 @@
+wi-button,
+wi-toolbar-button {
+  display: inline-block;
+}
+wi-button > div,
+wi-toolbar-button > div {
+  display: block;
+}
+wi-button > div > button,
+wi-toolbar-button > div > button {
+  display: inline-block;
+}
+wi-button > div > button > img,
+wi-toolbar-button > div > button > img {
+  margin: auto;
+}
+wi-button > div > button > p,
+wi-toolbar-button > div > button > p {
+  font-size: 12px;
+}
+.icon-top {
+  display: block;
+}
+.icon-left {
+  display: inline-block;
+  margin: 0;
+}

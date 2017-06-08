@@ -1,0 +1,29 @@
+wi-tabset {
+  /* khu border */
+}
+wi-tabset li.wi-tab.active {
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+}
+wi-tabset li.wi-tab.active > a,
+wi-tabset li.wi-tab > a:hover,
+wi-tabset li.wi-tab > a,
+wi-tabset li.wi-tab.active > a:hover {
+  border: none;
+}
+wi-tabset li.wi-tab {
+  cursor: pointer;
+  padding: 5px 10px;
+}
+wi-tabset li.wi-tab > a {
+  display: inline-block;
+  padding: 0;
+}
+wi-tabset li.wi-tab > i {
+  font-size: 50%;
+  color: #555;
+  opacity: 0.5;
+}
+wi-tabset li.wi-tab > i:hover {
+  opacity: 1;
+}

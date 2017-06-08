@@ -1,5 +1,5 @@
-const name = 'wiToolbar';
-const moduleName = 'wi-toolbar';
+const name = 'wiBlock';
+const moduleName = 'wi-block';
 
 function Controller() {
     var self = this;
@@ -8,13 +8,10 @@ function Controller() {
 var app = angular.module(moduleName, []);
 
 app.component(name, {
-    templateUrl: 'wi-toolbar.html',
+    template:'<div><div ng-transclude></div></div>',
     transclude: true,
     controller: Controller,
-    controllerAs: name,
-    bindings: {
-        label: '@'
-    }
+    controllerAs: name
 });
 
 exports.name = moduleName;

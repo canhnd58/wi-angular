@@ -9,7 +9,7 @@ function ButtonController() {
 }
 var app = angular.module(moduleName, []);
 app.component(wiButtonName, {
-    templateUrl: 'wi-button.html',
+    template:'<div style="display: inline-block"><button ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img class="{{wiButton.layout || wiButton.config.layout}}" ng-src="{{wiButton.imgurl || wiButton.config.imgUrl}}" alt="folder"><p class="{{wiButton.layout || wiButton.config.layout}}">{{wiButton.label || wiButton.config.label}}</p></button></div>',
     controller: ButtonController,
     controllerAs: wiButtonName,
     bindings: {

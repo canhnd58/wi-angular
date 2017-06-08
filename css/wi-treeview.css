@@ -1,0 +1,15 @@
+wi-treeview {
+  display: block;
+}
+wi-treeview .wi-treeview-container {
+  display: block;
+  margin-left: 2em;
+  cursor: pointer;
+}
+wi-treeview .wi-parent-node:hover {
+  background-color: lightgray;
+  opacity: 0.5;
+}
+wi-treeview .wi-parent-node .icon-expanded {
+  min-width: 8px;
+}

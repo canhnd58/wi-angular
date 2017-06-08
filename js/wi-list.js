@@ -7,7 +7,7 @@ function Controller() {
 
 var app = angular.module(moduleName, []);
 app.component(componentName, {
-    templateUrl: 'wi-list.html',
+    template:'<h4>{{wiList.heading}}</h4><table><tr ng-repeat="item in wiList.items"><td>{{item.key}}</td><td>{{item.value}}</td></tr></table>',
     controller: Controller,
     controllerAs: componentName,
     bindings: {

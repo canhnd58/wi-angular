@@ -1,0 +1,17 @@
+wi-toolbar {
+  display: inline-block;
+}
+wi-toolbar > div {
+  padding: 2px;
+  background-color: #f0f0f0;
+}
+wi-toolbar > div > .wi-toolbar-label {
+  margin: 0.2em;
+  padding: 0.2em;
+  text-align: center;
+  width: 100%;
+  background-color: darkgray ;
+}
+.toolbar-wrapper {
+  margin: 1px;
+}
