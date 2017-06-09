@@ -7,23 +7,40 @@ function TabsetController() {
 
     this.tabs = [];
 
-    this.selectTab = function (tab) {
-        for(var i=0; i < self.tabs.length; i++){
-            self.tabs[i].active = false;
-        }
+    this.selectTab = function (index) {
+        deactiveAllTabs(self.tabs);
 
-        self.tabs[tab.index].active = true;
+        self.tabs[index].active = true;
+    };
+
+    this.closeTab = function (index) {
+        deactiveAllTabs(self.tabs);
+
+        self.tabs.splice(index, 1);
+        if (self.tabs.length !== 0){
+            if (index < self.tabs.length){
+                self.tabs[index].active = true;
+            } else {
+                self.tabs[self.tabs.length - 1].active = true;
+            }
+        }
     };
 
     this.addTab = function (tab) {
         self.tabs.push(tab);
         self.tabs[self.tabs.length - 1].active = (self.tabs.length === 1);
+    };
+
+    function deactiveAllTabs(tabs) {
+        for(var i=0; i < tabs.length; i++){
+            tabs[i].active = false;
+        }
     }
 }
 
 var app = angular.module(moduleName, []);
 app.component(tabsetComponentName, {
-    template:'<div><ul class="nav nav-tabs"><li class="wi-tab border-1px padding-5-10" ng-repeat="tab in wiTabset.tabs track by $index" ng-class="{\'active\': tab.active}"><a class="display-inline-block padding-0 border-none" ng-click="wiTabset.selectTab(tab)">{{tab.heading}}</a> <i class="ti-close fontsize-smaller" ng-show="tab.closable"></i></li></ul><div ng-transclude></div></div>',
+    template:'<div><ul class="nav nav-tabs"><li class="wi-tab" ng-repeat="tab in wiTabset.tabs track by $index" ng-class="{\'active\': tab.active}" ng-click="wiTabset.selectTab($index)"><a>{{tab.heading}}</a> <i class="ti-close" ng-show="tab.closable == \'true\'" ng-click="wiTabset.closeTab($index)"></i></li></ul><div ng-transclude></div></div>',
     controller: TabsetController,
     controllerAs: tabsetComponentName,
     transclude: true
@@ -47,7 +64,6 @@ app.component(tabComponentName, {
         'wiTabsetCtrl': '^wiTabset'
     },
     bindings: {
-        index: '@',
         heading: '@',
         closable: '@'
     }

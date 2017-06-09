@@ -1,53 +1,171 @@
 <html>
 <head>
     <link href="vendor/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/css/font-awesome.min.css" rel="stylesheet">
+    <link href="vendor/css/themify-icons.css" rel="stylesheet">
+
+    <link href='css/main.css' rel='stylesheet'>
     <link href='css/wi-button.css' rel='stylesheet'>
+    <link href='css/wi-list.css' rel='stylesheet'>
+    <link href='css/wi-status-bar.css' rel='stylesheet'>
+    <link href='css/wi-tab.css' rel='stylesheet'>
+    <link href='css/wi-toolbar.css' rel='stylesheet'>
+    <link href='css/wi-treeview.css' rel='stylesheet'>
+    <link href='css/ribbon-block/ribbon-block.css' rel='stylesheet'>
+    <link href='css/status-bar/status-bar.css' rel='stylesheet'>
+    <link href='css/workspace-block/explorer-block.css' rel='stylesheet'>
+    <link href='css/workspace-block/working-block.css' rel='stylesheet'>
+    <link href='css/workspace-block/workspace-block.css' rel='stylesheet'>
+
     <script src="vendor/js/jquery.min.js"></script>
     <script src="vendor/js/bootstrap.min.js"></script>
     <script src="vendor/js/angular.min.js"></script>
-    <script src="vendor/js/ui-bootstrap-tpls-0.14.3.js"></script>
 
-    <script src='js/main-ribbon.js.bundle.js'></script>
-
-    <title>Test button</title>
+    <script src="js/main.js.bundle.js"></script>
 </head>
+<body ng-app='wiapp'>
 
-<body ng-app='helloapp'>
-<div ng-controller="WiRibbonController">
-    <wi-block>
-        <wi-tab label="toolbar1">
-            <wi-toolbar label="test">
-                <wi-button label="my button toobar" layout="icon-left"
-                           imgurl="img/32x32/project_new_32x32.png"
-                           handlers="myHandlers"></wi-button>
-                <wi-button label="my button toobar" layout="icon-top"
-                           imgurl="img/32x32/project_new_32x32.png"
-                           handlers="myHandlers"></wi-button>
-            </wi-toolbar>
-        </wi-tab>
-        <wi-tab label="toolbar1">
-            <wi-toolbar label="test">
-                <wi-button label="my button toobar" layout="icon-left"
-                           imgurl="img/32x32/project_new_32x32.png"
-                           handlers="myHandlers"></wi-button>
-                <wi-button label="my button toobar" layout="icon-top"
-                           imgurl="img/32x32/project_new_32x32.png"
-                           handlers="myHandlers"></wi-button>
-            </wi-toolbar>
-        </wi-tab>
-        <wi-tab label="toolbar1">
-            <wi-toolbar label="test">
-                <wi-button label="my button toobar" layout="icon-left"
-                           imgurl="img/32x32/project_new_32x32.png"
-                           handlers="myHandlers"></wi-button>
-                <wi-button label="my button toobar" layout="icon-top"
-                           imgurl="img/32x32/project_new_32x32.png"
-                           handlers="myHandlers"></wi-button>
-            </wi-toolbar>
-        </wi-tab>
+<div class="container" ng-controller="AppController">
 
+    <div class="ribbon-wrapper">
+        <wi-tabset>
+            <wi-tab heading="Project" closable="false">
+                <wi-toolbar name="databaseToolbar" label="Database">
+                    <wi-button name='newProject' label="New Project" layout="icon-top"
+                               imgurl="img/32x32/project_new_32x32.png"
+                               handlers="myHandlers"></wi-button>
+                    <wi-button label="Open Project" layout="icon-top"
+                               imgurl="img/32x32/project_new_32x32.png"
+                               handlers="myHandlers"></wi-button>
+                </wi-toolbar>
+            </wi-tab>
+            <wi-tab heading="Well" closable="false">
+                <wi-toolbar label="Well">
+                    <wi-button label="Well1" layout="icon-top"
+                               imgurl="img/32x32/project_new_32x32.png"
+                               handlers="myHandlers"></wi-button>
+                    <wi-button label="Well2" layout="icon-top"
+                               imgurl="img/32x32/project_new_32x32.png"
+                               handlers="myHandlers"></wi-button>
+                </wi-toolbar>
 
-    </wi-block>
+                <wi-toolbar label="Well 2">
+                    <wi-button label="Well1" layout="icon-top"
+                               imgurl="img/32x32/project_new_32x32.png"
+                               handlers="myHandlers"></wi-button>
+                    <wi-button label="Well2" layout="icon-top"
+                               imgurl="img/32x32/project_new_32x32.png"
+                               handlers="myHandlers"></wi-button>
+                </wi-toolbar>
+            </wi-tab>
+        </wi-tabset>
+    </div>
+
+    <div class="workspace-wrapper">
+        <div class="explorer-block">
+            <wi-treeview config="myConfig"></wi-treeview>
+        </div>
+        <div class="working-block">
+            <wi-tabset>
+                <wi-tab heading="Tab 1" closable="true">
+                    <p>Browsers allow text-areas to be re-sasdfasdfasdfasized by dragging their corner by default. I was wondering if this rule
+                        could be applied to other elements (a div for instance). I know this effect could be achieved using the
+                        jQuery draggable or the jQuery-ui resizable function, but I would like to do it with plain html / css if it
+                        is possible to avoid relying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+
+                    <p>Browsers allow text-arefasdfas to be re-sized by dragging their corner by default. I was wondering if this rule
+                        could be applied to othfasder elements (asdfasdfasda div for instance). I know this effect could be achieved using the
+                        jQuery draggable or the jQuery-uifasdffasd resizable function, but I would like to do it with plain html / css if it
+                        is possible toasdfasd avoid relying on that ldfibrary. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+
+                    <p>Browsers allow text-areas to be re-sized by dragging their corner by default. I was wondering if this rule
+                        could be applieasdfasdfasdfasdfd to other elementasdfasds (a div for instance). I know this effect could be achieved using the
+                        jQuery draggable for the jasuery-ui resizable function, but I would like to do it with plain html / css if it
+                        is possible tasdfo avoid relying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+                </wi-tab>
+
+                <wi-tab heading="Tab 2" closable="true">
+                    <p>Browsers allow tesdfgxtsdfgosdf other elements (a div for instance). I know this effect could be achieved using the
+                        jQuery draggablgsdfgsdfge or the jsdfgQuery-ui resizsdfgsdfgsdfgsdfgable function, but I would like to do it with plain html / css if it
+                        is possible to avoid relgsdfying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+
+                    <p>Browsers allow tfgsdfgext-arefgsdas to be re-sized sdfgsdby dragging their corner by default. I was wondering if this rule
+                        could be applied to other elements (a div for instance). I know this effect could be achieved using the
+                        jQuery draggable or the jQuery-ui resizablesdfg function, but I would like to do it with plain html / css if it
+                        is possible to avoid relying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+
+                    <p>Browsegsdfgrs gsdfallow text-areas to be rsdfge-sized by dragging their corner by default. I was wondering if this rule
+                        could bsdfgsdfe applied to sdfgsdfgother elements (a div for instance). I know this effect could be achieved using the
+                        jQuery gsdfdrsdfgsaggable or the jQuery-ui resizable function, but I would like to do it with plain html / css if it
+                        is possible to avoid rgelying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+                </wi-tab>
+
+                <wi-tab heading="Tab 3" closable="true">
+                    <p>Browsfgsdfgsdfgers alsdfgsdlosdfgsdfgw text-areas to be re-sized by dragging their corner by default. I was wondering if this rule
+                        could be applied tosdfgsdfg other elements (a div for instance). I know this effect could be achieved using the
+                        jQuersdfgy draggabsdfgle or the jQuery-ui resizable function, but I would like to do it with plain html / css if it
+                        is possdfgsdfgsible to avoid relying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+
+                    <p>Browsers allofgsdfgsdfw text-asdfgsdreas to be re-sized by dragging their corner by default. I was wondering if this rule
+                        could be applied to othesdfgr elements (a div for instance). I know this effect could be achieved using the
+                        jQuery draggable or the jQuery-ui resizable function, but I would like to do it with plain html / css if it
+                        is possible to avoid relying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+
+                    <p>Browsers allow text-areas to be re-sized by dragging their corner by default. I was wondering if this rule
+                        could be apgsdfplied to gsdfother elements (a div for instance). I know this effect could be achieved using the
+                        jQuery draggable or the jQuery-ugsdi resizable function, but I would like to do it with plain html / css if it
+                        is possible to avoid relying onfgsdfgsdfg that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+                </wi-tab>
+
+                <wi-tab heading="Tab 4" closable="true">
+                    <p>Browsergs allogsdfw text-areas tosdfgsdf be re-sized by dragging their corner by default. I was wondering if this rule
+                        could bgsde applied to other elements (asdfg div for instance). I know this effect could be achieved using the
+                        jQuery draggsdfgable or the jQuery-ui resizable function, but I would like to do it with plain html / css if it
+                        is sdfg to avoid relying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+
+                    <p>Browssdfgsdfgsdfgers sdfgalgsdfglow tegsdfgsdfgsdfgxt-areas to be re-sized by dragging their corner by default. I was wondering if this rule
+                        could be applied to othersdfgsdf elements (a div for instance). I know this effect could be achieved using the
+                        jQuesdfgry draggable or thgsdfe jQuery-ui resizable function, but I would like to do it with plain html / css if it
+                        is possible to avoid relying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any sdfgsdfother solution I would like to hear it.</p>
+
+                    <p>Browsesdfgsdfrs allofgsdfw text-areassdfgsdsdfgsdfgsdfgsdfgsdfg to be re-sized by dragging their corner by default. I was wondering if this rule
+                        coulgsdfgsdfgsdfgd be applied to other elements (a div for instance). I know this effect could be achieved using the
+                        jQuery draggsdfggable or the jQuery-ui resizable function, but I would like to do it with plain html / css if it
+                        is possible to avoid relying on that library. Are their any CSS rules that I could apply to a div to make it
+                        behave in this way?
+                        If you have any other solution I would like to hear it.</p>
+                </wi-tab>
+            </wi-tabset>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <wi-status-bar></wi-status-bar>
+    </div>
+
 </div>
+
 </body>
 </html>
