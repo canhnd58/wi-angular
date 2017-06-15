@@ -8,30 +8,32 @@ app.controller('TestTabset', function ($scope) {
 
 });
 },{"./wi-button.js":2,"./wi-tabs.js":3,"./wi-toolbar.js":4}],2:[function(require,module,exports){
-/**
- * Created by cuong on 6/6/2017.
- */
 const wiButtonName = 'wiButton';
 const moduleName = 'wi-button';
 
 function ButtonController() {
     var self = this;
+    this.default = {
+        label: 'Button',
+        layout: 'icon-top',
+        icon: 'project-new-32x32'
+    };
 }
 var app = angular.module(moduleName, []);
 app.component(wiButtonName, {
-    template:'<div style="display: inline-block"><button ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img class="{{wiButton.layout || wiButton.config.layout}}" ng-src="{{wiButton.imgurl || wiButton.config.imgUrl}}" alt="folder"><p class="{{wiButton.layout || wiButton.config.layout}}">{{wiButton.label || wiButton.config.label}}</p></button></div>',
+    template:'<div><button ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" ng-class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" alt="icon"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}">{{wiButton.label || wiButton.config.label}}</p></button></div>',
     controller: ButtonController,
     controllerAs: wiButtonName,
     bindings: {
         config: '<',
         label: '@',
         layout: '@',
-        imgurl: '@',
+        icon: '@',
         handlers: '<'
     }
 });
 
-exports.name=moduleName;
+exports.name = moduleName;
 
 },{}],3:[function(require,module,exports){
 const tabsetComponentName = 'wiTabset';
@@ -52,9 +54,11 @@ function TabsetController() {
     this.closeTab = function (index) {
         deactiveAllTabs(self.tabs);
 
+        console.log(self.tabs);
+
         self.tabs.splice(index, 1);
-        if (self.tabs.length !== 0){
-            if (index < self.tabs.length){
+        if (self.tabs.length !== 0) {
+            if (index < self.tabs.length) {
                 self.tabs[index].active = true;
             } else {
                 self.tabs[self.tabs.length - 1].active = true;
@@ -68,7 +72,7 @@ function TabsetController() {
     };
 
     function deactiveAllTabs(tabs) {
-        for(var i=0; i < tabs.length; i++){
+        for (var i = 0; i < tabs.length; i++) {
             tabs[i].active = false;
         }
     }

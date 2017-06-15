@@ -1,32 +1,13 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-wiRibbon = require('./wi-button.js');
-wiToolbar = require('./wi-toolbar.js');
+wiDropdown = require('./wi-dropdown');
+wiButton = require('./wi-button');
 
-app=angular.module('helloapp', ['ui.bootstrap', wiToolbar.name, wiRibbon.name]);
+var app = angular.module('helloapp', [wiDropdown.name, wiButton.name]);
 app.controller('WiDummy', function($scope) {
-        $scope.buttonCfg = buttonCfg;
-        $scope.buttonCfg2 = buttonCfg2;
-    });
-buttonCfg = {
-    icon: 'project-new-32x32',
-    label: 'New Project',
-    layout: 'icon-left',
-    handlers: {
-        onclick: function() {
-            console.log('click');
-        },
-        onmouseover: function() {
-            console.log('mouseOver');
-        }
-    }
-};
-buttonCfg2 = {
-    icon: 'project-open-32x32',
-    label: 'Open Project',
-    layout: 'icon-top'
-};
 
-},{"./wi-button.js":2,"./wi-toolbar.js":3}],2:[function(require,module,exports){
+});
+
+},{"./wi-button":2,"./wi-dropdown":3}],2:[function(require,module,exports){
 const wiButtonName = 'wiButton';
 const moduleName = 'wi-button';
 
@@ -55,22 +36,25 @@ app.component(wiButtonName, {
 exports.name = moduleName;
 
 },{}],3:[function(require,module,exports){
-const name = 'wiToolbar';
-const moduleName = 'wi-toolbar';
+const componentName = 'wiDropdown';
+const moduleName = 'wi-dropdown';
 
 function Controller() {
     var self = this;
+
 }
-
 var app = angular.module(moduleName, []);
-
-app.component(name, {
-    template:'<div class="toolbar-wrapper"><div ng-transclude></div><p class="wi-toolbar-label">{{wiToolbar.label}}</p></div>',
-    transclude: true,
+app.component(componentName, {
+    template:'<div class="dropdown"><button class="dropdown-toggle" type="button" data-toggle="dropdown" ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img class="{{wiDropdown.layout || wiDropdown.config.layout}}" ng-src="{{wiDropdown.imgurl || wiDropdown.config.imgUrl}}" alt="folder"><div class="label-wrapper {{wiDropdown.layout || wiDropdown.config.layout}}"><span class="{{wiDropdown.layout || wiDropdown.config.layout}}">{{wiDropdown.label || wiDropdown.config.label}}</span> <span class="caret"></span></div></button><ul class="dropdown-menu"><div ng-transclude></div></ul></div>',
     controller: Controller,
-    controllerAs: name,
+    controllerAs: componentName,
+    transclude: true,
     bindings: {
-        label: '@'
+        config: '<',
+        label: '@',
+        layout: '@',
+        imgurl: '@',
+        handlers: '<'
     }
 });
 

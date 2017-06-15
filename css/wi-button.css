@@ -18,6 +18,10 @@ wi-button > div > button > p,
 wi-toolbar-button > div > button > p {
   font-size: 12px;
 }
+wi-button p,
+wi-toolbar-button p {
+  margin: 0;
+}
 .icon-top {
   display: block;
 }

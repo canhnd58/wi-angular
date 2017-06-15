@@ -1,0 +1,20 @@
+wi-slidingbar {
+  position: relative;
+  display: block;
+}
+wi-slidingbar .sliding-container {
+  height: 100%;
+  background-color: #2b542c;
+  overflow: hidden;
+}
+wi-slidingbar .ui-widget-content {
+  height: 150px;
+  background-color: transparent;
+}
+wi-slidingbar .sliding-content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}

@@ -1,85 +1,69 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 wiTreeview = require('./wi-treeview');
 
-var app = angular.module('helloapp', ['ui.bootstrap', wiTreeview.name]);
+var app = angular.module('helloapp', [wiTreeview.name]);
 app.controller('WiDummy', function($scope) {
     $scope.myConfig = TREE_CONFIG_TEST;
 });
 
-const TREE_CONFIG_TEST = [
+TREE_CONFIG_TEST = [
     {
         data: {
-            imgUrl: 'img/32x32/project_new_32x32.png',
+            icon: 'project-new-16x16',
             label: 'item 1',
             description: 'description 1',
             childExpanded: false,
-            handler: ''
+            handler: function () {
+                console.log('handler');
+            }
         },
         children: [
             {
                 data: {
-                    imgUrl: 'img/32x32/project_new_32x32.png',
+                    icon: 'project-new-16x16',
                     label: 'item 1.1',
                     description: '',
-                    childExpanded: true,
-                    handler: ''
+                    childExpanded: false,
+                    handler: function () {
+                        console.log('handler');
+                    }
                 },
                 children: [
                     {
                         data: {
-                            imgUrl: 'img/32x32/project_new_32x32.png',
+                            icon: 'project-new-16x16',
                             label: 'item 1.2.1',
                             description: '',
-                            childExpanded: true,
-                            handler: ''
-                        },
-                        children: [
-                            {
-                                data: {
-                                    imgUrl: 'img/32x32/project_new_32x32.png',
-                                    label: 'item 1.2.1.1',
-                                    description: '',
-                                    childExpanded: true,
-                                    handler: ''
-                                },
-                                children: [
-                                    {
-                                        data: {
-                                            imgUrl: 'img/32x32/project_new_32x32.png',
-                                            label: 'item 1.2.1.1.1',
-                                            description: '',
-                                            childExpanded: true,
-                                            handler: ''
-                                        },
-                                        children: [
-
-                                        ]
-                                    }
-                                ]
+                            childExpanded: false,
+                            handler: function () {
+                                console.log('handler');
                             }
-                        ]
+                        },
+                        children: []
                     },
                     {
                         data: {
-                            imgUrl: 'img/32x32/project_new_32x32.png',
+                            icon: 'project-new-16x16',
                             label: 'item 1.2.2',
                             description: '',
-                            childExpanded: true,
-                            handler: ''
+                            childExpanded: false,
+                            handler: function () {
+                                console.log('handler');
+                            }
                         },
-                        children: [
-
-                        ]
+                        children: []
                     }
                 ]
             },
             {
                 data: {
-                    imgUrl: 'img/32x32/project_new_32x32.png',
+                    icon: 'project-new-16x16',
                     label: 'item 1.2',
                     description: '',
-                    childExpanded: true,
-                    handler: ''
+                    childExpanded: false,
+                    handler: function () {
+                        console.log('handler');
+                    }
                 },
                 children: []
             }
@@ -87,11 +71,13 @@ const TREE_CONFIG_TEST = [
     },
     {
         data: {
-            imgUrl: 'img/32x32/project_new_32x32.png',
+            icon: 'project-new-16x16',
             label: 'item 2',
             description: 'description 2',
-            childExpanded: true,
-            handler: ''
+            childExpanded: false,
+            handler: function () {
+                console.log('handler');
+            }
         }
     }
 ];
@@ -102,13 +88,14 @@ const moduleName = 'wi-treeview';
 function Controller() {
     var self = this;
 
-    this.onCaretClick = function () {
-        self.data.childExpanded = !self.data.childExpanded;
-    }
+    this.onSelectItem = function ($index) {
+        self.config[$index].data.handler();
+    };
 }
+
 var app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div class="wi-treeview-container" ng-repeat="item in wiTreeview.config"><div class="wi-parent-node" ng-click="item.data.childExpanded = !item.data.childExpanded"><i aria-hidden="true" class="fa icon-expanded" ng-class="{\'fa-caret-down\': item.data.childExpanded, \'fa-caret-right\': !item.data.childExpanded, \'wi-hidden\': item.children == null || item.children.length == 0}"></i> <img ng-src="{{item.data.imgUrl}}" alt="img item treeview"> <span>{{item.data.label}}</span></div><div ng-show="item.data.childExpanded"><wi-treeview config="item.children"></wi-treeview></div></div>',
+    template:'<div class="wi-treeview-container" ng-repeat="item in wiTreeview.config track by $index"><div class="wi-parent-node" ng-click="item.data.childExpanded = !item.data.childExpanded" ng-dblclick="wiTreeview.onSelectItem($index)"><i aria-hidden="true" class="fa icon-expanded" ng-class="{\'fa-caret-down\': item.data.childExpanded, \'fa-caret-right\': !item.data.childExpanded, \'wi-hidden\': item.children == null || item.children.length == 0}"></i> <img class="{{item.data.icon}}" alt="img item treeview"> <span>{{item.data.label}}</span></div><div ng-show="item.data.childExpanded"><wi-treeview config="item.children"></wi-treeview></div></div>',
     controller: Controller,
     controllerAs: componentName,
     bindings: {

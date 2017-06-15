@@ -3,7 +3,7 @@ wi-treeview {
 }
 wi-treeview .wi-treeview-container {
   display: block;
-  padding-left: 2em;
+  padding-left: 21px;
   cursor: pointer;
 }
 wi-treeview .wi-parent-node:hover {

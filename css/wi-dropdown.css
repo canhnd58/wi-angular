@@ -1,0 +1,16 @@
+wi-dropdown {
+  display: inline-block;
+}
+wi-dropdown wi-button {
+  display: block;
+}
+wi-dropdown .dropdown-menu {
+  min-width: 0;
+}
+wi-dropdown .icon-left {
+  display: inline-block;
+}
+wi-dropdown .icon-top {
+  margin: auto;
+  display: block;
+}

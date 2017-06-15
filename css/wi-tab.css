@@ -1,5 +1,9 @@
 wi-tabset {
+  display: block;
   /* khu border */
+}
+wi-tabset wi-tab {
+  display: block;
 }
 wi-tabset li.wi-tab.active {
   border: 1px solid #ddd;
