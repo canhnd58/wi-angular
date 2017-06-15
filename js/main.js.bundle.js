@@ -185,7 +185,7 @@ function ButtonController() {
 }
 var app = angular.module(moduleName, []);
 app.component(wiButtonName, {
-    template:'<div><button ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" ng-class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" alt="icon"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}">{{wiButton.label || wiButton.config.label}}</p></button></div>',
+    template:'<div><button ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}">{{wiButton.label || wiButton.config.label}}</p></button></div>',
     controller: ButtonController,
     controllerAs: wiButtonName,
     bindings: {
@@ -209,7 +209,7 @@ function Controller() {
 }
 var app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div class="dropdown"><button class="dropdown-toggle" type="button" data-toggle="dropdown" ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img class="{{wiDropdown.layout || wiDropdown.config.layout}}" ng-src="{{wiDropdown.imgurl || wiDropdown.config.imgUrl}}" alt="folder"><div class="label-wrapper {{wiDropdown.layout || wiDropdown.config.layout}}"><span class="{{wiDropdown.layout || wiDropdown.config.layout}}">{{wiDropdown.label || wiDropdown.config.label}}</span> <span class="caret"></span></div></button><ul class="dropdown-menu"><div ng-transclude></div></ul></div>',
+    template:'<div class="dropdown"><button class="dropdown-toggle" type="button" data-toggle="dropdown" ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img ng-src="{{wiDropdown.imgurl || wiDropdown.config.imgUrl}}" alt="folder"><div class="label-wrapper {{wiDropdown.layout || wiDropdown.config.layout}}"><span class="{{wiDropdown.layout || wiDropdown.config.layout}}">{{wiDropdown.label || wiDropdown.config.label}}</span> <span class="caret"></span></div></button><ul class="dropdown-menu"><div ng-transclude></div></ul></div>',
     controller: Controller,
     controllerAs: componentName,
     transclude: true,
@@ -417,8 +417,6 @@ function TabsetController() {
 
     this.closeTab = function (index) {
         deactiveAllTabs(self.tabs);
-
-        console.log(self.tabs);
 
         self.tabs.splice(index, 1);
         self.tabConfigs.splice(index, 1);
