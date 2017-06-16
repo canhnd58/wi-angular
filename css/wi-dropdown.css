@@ -6,6 +6,7 @@ wi-dropdown wi-button {
 }
 wi-dropdown .dropdown-menu {
   min-width: 0;
+  padding: 0;
 }
 wi-dropdown .icon-left {
   display: inline-block;

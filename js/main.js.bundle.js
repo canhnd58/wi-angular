@@ -1,50 +1,26 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var WORKING_TABS = [
-    // {
-    //     type: 'dogs',
-    //     heading: 'Dogs',
-    //     closable: 'true'
-    // },
-    // {
-    //     type: 'tuts',
-    //     heading: 'Tuts',
-    //     closable: 'true'
-    // },
-    // {
-    //     type: 'cars',
-    //     heading: 'Cars',
-    //     closable: 'true'
-    // }
-];
+var WORKING_TABS = [];
 
 const TREE_CONFIG_TEST = [
     {
         data: {
             icon: 'project-new-16x16',
-            label: 'Item 1 (cars)',
+            label: 'Item 1',
             description: 'description 1',
             childExpanded: false,
             handler: function () {
-                WORKING_TABS.push({
-                    type: 'cars',
-                    heading: 'Item 1 (cars)',
-                    closable: 'true'
-                });
+                console.log('do nothing');
             }
         },
         children: [
             {
                 data: {
                     icon: 'project-new-16x16',
-                    label: 'Item 1.1 (tuts)',
+                    label: 'Item 1.1',
                     description: '',
                     childExpanded: false,
                     handler: function () {
-                        WORKING_TABS.push({
-                            type: 'tuts',
-                            heading: 'Item 1.1 (tuts)',
-                            closable: 'true'
-                        });
+                        console.log('do nothing');
                     }
                 },
                 children: [
@@ -177,23 +153,29 @@ const moduleName = 'wi-button';
 
 function ButtonController() {
     var self = this;
+
     this.default = {
         label: 'Button',
         layout: 'icon-top',
         icon: 'project-new-32x32'
     };
+
+    this.onClick = function () {
+        if (self.handler) self.handler();
+    };
 }
 var app = angular.module(moduleName, []);
 app.component(wiButtonName, {
-    template:'<div><button ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}">{{wiButton.label || wiButton.config.label}}</p></button></div>',
+    template:'<div><button ng-click="wiButton.onClick()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
     controller: ButtonController,
     controllerAs: wiButtonName,
     bindings: {
         config: '<',
+        name: '@',
         label: '@',
         layout: '@',
         icon: '@',
-        handlers: '<'
+        handler: '<'
     }
 });
 
@@ -206,10 +188,19 @@ const moduleName = 'wi-dropdown';
 function Controller() {
     var self = this;
 
+    this.default = {
+        label: 'Dropdown',
+        layout: 'icon-top',
+        icon: 'project-new-32x32'
+    };
+
+    this.onClick = function () {
+        if (self.handler) self.handler();
+    };
 }
 var app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div class="dropdown"><button class="dropdown-toggle" type="button" data-toggle="dropdown" ng-click="wiButton.handlers.onclick()" ng-mouseover="wiButton.handlers.onmouseover()"><img ng-src="{{wiDropdown.imgurl || wiDropdown.config.imgUrl}}" alt="folder"><div class="label-wrapper {{wiDropdown.layout || wiDropdown.config.layout}}"><span class="{{wiDropdown.layout || wiDropdown.config.layout}}">{{wiDropdown.label || wiDropdown.config.label}}</span> <span class="caret"></span></div></button><ul class="dropdown-menu"><div ng-transclude></div></ul></div>',
+    template:'<div class="dropdown"><button class="dropdown-toggle" type="button" data-toggle="dropdown" ng-click="wiDropdown.onClick()"><img class="{{wiDropdown.icon || wiDropdown.config.icon || wiDropdown.default.icon}}" alt="icon wi-dropdown"><div class="label-wrapper {{wiDropdown.layout || wiDropdown.config.layout || wiDropdown.default.layout}}"><span class="{{wiDropdown.layout || wiDropdown.config.layout || wiDropdown.default.layout}}">{{wiDropdown.label || wiDropdown.config.label || wiDropdown.default.label}}</span> <span class="caret"></span></div></button><ul class="dropdown-menu"><div ng-transclude></div></ul></div>',
     controller: Controller,
     controllerAs: componentName,
     transclude: true,
@@ -217,8 +208,8 @@ app.component(componentName, {
         config: '<',
         label: '@',
         layout: '@',
-        imgurl: '@',
-        handlers: '<'
+        icon: '@',
+        handler: '<'
     }
 });
 
@@ -382,14 +373,14 @@ const moduleName = 'wi-treeview';
 function Controller() {
     var self = this;
 
-    this.onSelectItem = function ($index) {
-        self.config[$index].data.handler();
+    this.onDoubleClick = function ($index) {
+        if (self.config[$index].data.handler) self.config[$index].data.handler();
     };
 }
 
 var app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div class="wi-treeview-container" ng-repeat="item in wiTreeview.config track by $index"><div class="wi-parent-node" ng-click="item.data.childExpanded = !item.data.childExpanded" ng-dblclick="wiTreeview.onSelectItem($index)"><i aria-hidden="true" class="fa icon-expanded" ng-class="{\'fa-caret-down\': item.data.childExpanded, \'fa-caret-right\': !item.data.childExpanded, \'wi-hidden\': item.children == null || item.children.length == 0}"></i> <img class="{{item.data.icon}}" alt="img item treeview"> <span>{{item.data.label}}</span></div><div ng-show="item.data.childExpanded"><wi-treeview config="item.children"></wi-treeview></div></div>',
+    template:'<div class="wi-treeview-container" ng-repeat="item in wiTreeview.config track by $index"><div class="wi-parent-node" ng-click="item.data.childExpanded = !item.data.childExpanded" ng-dblclick="wiTreeview.onDoubleClick($index)"><i aria-hidden="true" class="fa icon-expanded" ng-class="{\'fa-caret-down\': item.data.childExpanded, \'fa-caret-right\': !item.data.childExpanded, \'wi-hidden\': item.children == null || item.children.length == 0}"></i> <img class="{{item.data.icon}}" alt="img item treeview"> <span>{{item.data.label}}</span></div><div ng-show="item.data.childExpanded"><wi-treeview config="item.children"></wi-treeview></div></div>',
     controller: Controller,
     controllerAs: componentName,
     bindings: {
