@@ -1,0 +1,18 @@
+wi-logplot {
+  display: flex;
+  flex-direction: column;
+}
+wi-logplot .logplot-toolbar-wrapper {
+  border: 1px solid blue;
+}
+wi-logplot .logplot-main-content {
+  border: 1px solid red;
+  flex: 1;
+  display: flex;
+}
+wi-logplot .logplot-main-content wi-slidingbar {
+  width: 150px;
+}
+wi-logplot .logplot-main-content .logplot-sub-content {
+  flex: 1;
+}

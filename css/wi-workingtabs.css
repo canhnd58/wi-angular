@@ -1,9 +1,19 @@
 wi-workingtabset {
-  display: block;
+  display: flex;
+  flex-direction: column;
   /* khu border */
 }
-wi-workingtabset wi-tab {
-  display: block;
+wi-workingtabset .wi-working-tabset-content {
+  flex: 1;
+  display: flex;
+}
+wi-workingtabset .wi-working-tabset-content wi-workingtab {
+  flex: 1;
+  display: flex;
+}
+wi-workingtabset .wi-working-tabset-content wi-workingtab .wi-workingtab-content {
+  flex: 1;
+  display: flex;
 }
 wi-workingtabset li.wi-tab.active {
   border: 1px solid #ddd;
