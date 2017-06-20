@@ -29,7 +29,7 @@ function Controller($scope, $timeout, wiSlidingbar) {
         $scope.$apply();
     }
 
-    this.$onInit = function () {
+    this.$postLink = function () {
         parentHeight = parseInt($("#sliding-bar-content").height());
         var initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
 
@@ -47,11 +47,10 @@ function Controller($scope, $timeout, wiSlidingbar) {
             handles: "n, s"
         });
 
-        setSlidingHandleHeight();
+        //setSlidingHandleHeight();
         $timeout(function () {
             setSlidingHandleHeight();
-        }, 100);
-
+        }, 0);
 
         $("#sliding-handle").on("resize", function (event, ui) {
             update(ui);

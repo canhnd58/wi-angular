@@ -178,7 +178,7 @@ function ButtonController() {
     var self = this;
 
     this.default = {
-        label: 'Button',
+        label: '',
         layout: 'icon-top',
         icon: 'project-new-32x32'
     };
@@ -189,7 +189,7 @@ function ButtonController() {
 }
 var app = angular.module(moduleName, []);
 app.component(wiButtonName, {
-    template:'<div><button ng-click="wiButton.onClick()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
+    template:'<div><button ng-click="wiButton.onClick()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
     controller: ButtonController,
     controllerAs: wiButtonName,
     bindings: {
@@ -293,7 +293,7 @@ function Controller($scope, $timeout, wiSlidingbar) {
         $scope.$apply();
     }
 
-    this.$onInit = function () {
+    this.$postLink = function () {
         parentHeight = parseInt($("#sliding-bar-content").height());
         var initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
 
@@ -311,11 +311,10 @@ function Controller($scope, $timeout, wiSlidingbar) {
             handles: "n, s"
         });
 
-        setSlidingHandleHeight();
+        //setSlidingHandleHeight();
         $timeout(function () {
             setSlidingHandleHeight();
-        }, 100);
-
+        }, 0);
 
         $("#sliding-handle").on("resize", function (event, ui) {
             update(ui);
@@ -527,9 +526,13 @@ function TabsetController() {
     };
 
     this.addTab = function (tab) {
+        deactiveAllTabs(self.tabs);
+        deactiveAllTabs(self.tabConfigs);
+
+        tab.active = true;
         self.tabs.push(tab);
-        self.tabs[self.tabs.length - 1].active = (self.tabs.length === 1);
-        self.tabConfigs[self.tabConfigs.length - 1].active = (self.tabConfigs.length === 1);
+
+        self.tabConfigs[self.tabConfigs.length - 1].active = true;
     };
 
     function deactiveAllTabs(tabs) {
