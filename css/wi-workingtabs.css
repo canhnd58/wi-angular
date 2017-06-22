@@ -15,6 +15,15 @@ wi-workingtabset .wi-working-tabset-content wi-workingtab .wi-workingtab-content
   flex: 1;
   display: flex;
 }
+wi-workingtabset .wi-working-tabset-content wi-workingtab .working-tab-content {
+  flex: 1;
+}
+wi-workingtabset .wi-working-tabset-content wi-workingtab .working-logplot-tab-container {
+  display: flex;
+}
+wi-workingtabset .wi-working-tabset-content wi-workingtab .working-logplot-tab-container wi-logplot {
+  flex: 1;
+}
 wi-workingtabset li.wi-tab.active {
   border: 1px solid #ddd;
   border-bottom-color: transparent;
@@ -40,4 +49,7 @@ wi-workingtabset li.wi-tab > i {
 }
 wi-workingtabset li.wi-tab > i:hover {
   opacity: 1;
+}
+wi-workingtabset .wi-display-none {
+  display: none !important;
 }

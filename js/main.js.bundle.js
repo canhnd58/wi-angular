@@ -17,7 +17,7 @@ const TREE_CONFIG_TEST = [
                 data: {
                     icon: 'project-new-16x16',
                     label: 'Item 1.1',
-                    description: '',
+                    description: 'des 1',
                     childExpanded: false,
                     handler: function () {
                         console.log('do nothing');
@@ -28,7 +28,7 @@ const TREE_CONFIG_TEST = [
                         data: {
                             icon: 'project-new-16x16',
                             label: 'Item 1.2.1 (dogs)',
-                            description: '',
+                            description: 'des 1.2',
                             childExpanded: false,
                             handler: function () {
                                 WORKING_TABS.push({
@@ -45,7 +45,7 @@ const TREE_CONFIG_TEST = [
                         data: {
                             icon: 'project-new-16x16',
                             label: 'Item 1.2.2 (cars)',
-                            description: '',
+                            description: 'cars',
                             childExpanded: false,
                             handler: function () {
                                 WORKING_TABS.push({
@@ -62,11 +62,12 @@ const TREE_CONFIG_TEST = [
                         data: {
                             icon: 'project-new-16x16',
                             label: 'Logplot',
-                            description: '',
+                            description: 'logplot',
                             childExpanded: false,
                             handler: function () {
                                 WORKING_TABS.push({
                                     type: 'logplot',
+                                    name: 'MyLogplot' + Date.now(),
                                     heading: 'blank logplot',
                                     closable: 'true',
                                     active: false
@@ -81,7 +82,7 @@ const TREE_CONFIG_TEST = [
                 data: {
                     icon: 'project-new-16x16',
                     label: 'Item 1.2 (cars)',
-                    description: '',
+                    description: 'cars',
                     childExpanded: false,
                     handler: function () {
                         WORKING_TABS.push({
@@ -100,7 +101,7 @@ const TREE_CONFIG_TEST = [
         data: {
             icon: 'project-new-16x16',
             label: 'Item 2 (cars)',
-            description: 'description 2',
+            description: 'car',
             childExpanded: false,
             handler: function () {
                 WORKING_TABS.push({
@@ -128,6 +129,10 @@ wiStatusBar = require('./wi-status-bar');
 wiSlidingbar = require('./wi-slidingbar');
 wiLogplot = require('./wi-logplot.js');
 
+wiList = require('./wi-list');
+
+wiComponentService = require('./wi-component-service.js');
+
 var app = angular.module('wiapp',
     [
         wiButton.name,
@@ -138,7 +143,9 @@ var app = angular.module('wiapp',
         wiTreeview.name,
         wiStatusBar.name,
         wiSlidingbar.name,
-        wiLogplot.name
+        wiLogplot.name,
+        wiList.name,
+        wiComponentService.name
     ]);
 
 app.controller('AppController', function ($scope, $timeout) {
@@ -152,6 +159,29 @@ app.controller('AppController', function ($scope, $timeout) {
             heading: 'Well'
         }
     };
+
+    $scope.listItems = [
+        {
+            imgUrl: '',
+            key: 'key',
+            value: 'value'
+        },
+        {
+            imgUrl: '',
+            key: 'key',
+            value: 'value'
+        },
+        {
+            imgUrl: '',
+            key: 'key',
+            value: 'value'
+        },
+        {
+            imgUrl: '',
+            key: 'key',
+            value: 'value'
+        }
+    ];
 
     $scope.workingTabs = appConfig.WORKING_TABS;
 
@@ -170,11 +200,12 @@ app.controller('AppController', function ($scope, $timeout) {
     //     }, 5000);
     // }
 });
-},{"./app.config":1,"./wi-button.js":3,"./wi-dropdown.js":4,"./wi-logplot.js":5,"./wi-slidingbar":6,"./wi-status-bar":7,"./wi-tabs.js":8,"./wi-toolbar.js":9,"./wi-treeview":10,"./wi-workingtabs.js":11}],3:[function(require,module,exports){
+
+},{"./app.config":1,"./wi-button.js":3,"./wi-component-service.js":4,"./wi-dropdown.js":5,"./wi-list":6,"./wi-logplot.js":7,"./wi-slidingbar":8,"./wi-status-bar":9,"./wi-tabs.js":10,"./wi-toolbar.js":11,"./wi-treeview":12,"./wi-workingtabs.js":13}],3:[function(require,module,exports){
 const wiButtonName = 'wiButton';
 const moduleName = 'wi-button';
 
-function ButtonController() {
+function ButtonController(wiComponentService) {
     var self = this;
 
     this.default = {
@@ -186,7 +217,12 @@ function ButtonController() {
     this.onClick = function () {
         if (self.handler) self.handler();
     };
+
+    this.$onInit = function() {
+        if (self.name) wiComponentService.putComponent(self.name, self);
+    }
 }
+
 var app = angular.module(moduleName, []);
 app.component(wiButtonName, {
     template:'<div><button ng-click="wiButton.onClick()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
@@ -205,14 +241,35 @@ app.component(wiButtonName, {
 exports.name = moduleName;
 
 },{}],4:[function(require,module,exports){
+const wiServiceName = 'wiComponentService';
+const moduleName = 'wi-component-service';
+
+var app = angular.module(moduleName, []);
+app.factory(wiServiceName, function() {
+    var __Controllers = new Object();
+    return { 
+        getComponent: function(componentName){
+            console.log("Do you want " + componentName + "'s controller?");
+            return __Controllers[componentName];
+        },
+        putComponent: function(componentName, controller) {
+            console.log("put component:" + componentName + " - ", controller); 
+            __Controllers[componentName] = controller;
+        }
+    };
+});
+
+exports.name = moduleName;
+
+},{}],5:[function(require,module,exports){
 const componentName = 'wiDropdown';
 const moduleName = 'wi-dropdown';
 
-function Controller() {
+function Controller(wiComponentService) {
     var self = this;
 
     this.default = {
-        label: 'Dropdown',
+        label: '',
         layout: 'icon-top',
         icon: 'project-new-32x32'
     };
@@ -220,15 +277,21 @@ function Controller() {
     this.onClick = function () {
         if (self.handler) self.handler();
     };
+
+    this.$onInit = function() {
+        if (self.name) wiComponentService.putComponent(self.name, self);
+    }
 }
+
 var app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div class="dropdown"><button class="dropdown-toggle" type="button" data-toggle="dropdown" ng-click="wiDropdown.onClick()"><img class="{{wiDropdown.icon || wiDropdown.config.icon || wiDropdown.default.icon}}" alt="icon wi-dropdown"><div class="label-wrapper {{wiDropdown.layout || wiDropdown.config.layout || wiDropdown.default.layout}}"><span class="{{wiDropdown.layout || wiDropdown.config.layout || wiDropdown.default.layout}}">{{wiDropdown.label || wiDropdown.config.label || wiDropdown.default.label}}</span> <span class="caret"></span></div></button><ul class="dropdown-menu"><div ng-transclude></div></ul></div>',
+    template:'<div class="dropdown"><button class="dropdown-toggle" type="button" data-toggle="dropdown" ng-click="wiDropdown.onClick()"><img class="{{wiDropdown.icon || wiDropdown.config.icon || wiDropdown.default.icon}}" alt="icon wi-dropdown"><div class="label-wrapper {{wiDropdown.layout || wiDropdown.config.layout || wiDropdown.default.layout}}"><span class="{{wiDropdown.layout || wiDropdown.config.layout || wiDropdown.default.layout}}" ng-show="wiDropdown.label || wiDropdown.config.label">{{wiDropdown.label || wiDropdown.config.label}}</span> <span class="caret"></span></div></button><ul class="dropdown-menu"><div ng-transclude></div></ul></div>',
     controller: Controller,
     controllerAs: componentName,
     transclude: true,
     bindings: {
         config: '<',
+        name: '@',
         label: '@',
         layout: '@',
         icon: '@',
@@ -238,47 +301,80 @@ app.component(componentName, {
 
 exports.name = moduleName;
 
-},{}],5:[function(require,module,exports){
-const componentName = 'wiLogplot';
-const moduleName = 'wi-logplot';
+},{}],6:[function(require,module,exports){
+const componentName = 'wiList';
+const moduleName = 'wi-list';
 
-wiButton = require('./wi-button.js');
-wiToolbar = require('./wi-toolbar.js');
-wiSlidingbar = require('./wi-slidingbar.js');
-
-function Controller(wiSlidingbar) {
+function Controller(wiComponentService) {
     var self = this;
-    this.wiSlidingbar = wiSlidingbar;
+
+    this.$onInit = function() {
+        if (self.name) wiComponentService.putComponent(self.name, self);
+    }
 }
 
-var app = angular.module(moduleName, [wiButton.name, wiToolbar.name, wiSlidingbar.name]);
+var app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div class="logplot-toolbar-wrapper"><wi-toolbal><wi-button layout="icon-left"></wi-button><wi-button layout="icon-left"></wi-button></wi-toolbal><wi-toolbar><wi-button layout="icon-left"></wi-button><wi-button layout="icon-left"></wi-button></wi-toolbar></div><div class="logplot-main-content"><wi-slidingbar><p>Some thing like curve</p></wi-slidingbar><div class="logplot-sub-content">Some tracks: {{wiLogplot.wiSlidingbar.top}} -- {{wiLogplot.wiSlidingbar.range}}</div></div>',
+    template:'<h4>{{wiList.heading}}</h4><table><tr ng-repeat="item in wiList.items"><td>{{item.key}}</td><td>{{item.value}}</td></tr></table>',
     controller: Controller,
     controllerAs: componentName,
-    transclude: true
+    bindings: {
+        name : '@',
+        heading: '@',
+        items: '<',
+        handler: '<'
+    }
 });
 
 exports.name = moduleName;
 
-},{"./wi-button.js":3,"./wi-slidingbar.js":6,"./wi-toolbar.js":9}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+const componentName = 'wiLogplot';
+const moduleName = 'wi-logplot';
+
+function Controller(wiComponentService) {
+    var self = this;
+
+    this.$onInit = function () {
+        self.slidingbarName = self.name + 'Slidingbar';
+
+        if (self.name) wiComponentService.putComponent(self.name, self);
+    };
+
+    this.getSlidingbarCtrl = function () {
+        return self.slidingBar = wiComponentService.getComponent(self.slidingbarName);
+    }
+}
+
+var app = angular.module(moduleName, []);
+app.component(componentName, {
+    template:'<div class="logplot-toolbar-wrapper"><wi-toolbal><wi-button layout="icon-left"></wi-button><wi-button layout="icon-left"></wi-button></wi-toolbal><wi-toolbar><wi-button layout="icon-left"></wi-button><wi-button layout="icon-left"></wi-button></wi-toolbar></div><div class="logplot-main-content"><wi-slidingbar name="{{wiLogplot.slidingbarName}}" ng-init="wiLogplot.getSlidingbarCtrl()"><p>Some thing like curve</p></wi-slidingbar><div class="logplot-sub-content">Some tracks: {{wiLogplot.slidingBar.slidingBarState.top}} -- {{wiLogplot.slidingBar.slidingBarState.range}}</div></div>',
+    controller: Controller,
+    controllerAs: componentName,
+    transclude: true,
+    bindings: {
+        name: '@'
+    }
+});
+
+exports.name = moduleName;
+},{}],8:[function(require,module,exports){
 const componentName = 'wiSlidingbar';
 const moduleName = 'wi-slidingbar';
 
 const MIN_RANGE = 30;
 
-var slidingBarState = {
-    top: 0,
-    range: MIN_RANGE
-};
-
-function Controller($scope, $timeout, wiSlidingbar) {
-    var self = this;
+function Controller($scope, wiComponentService) {
+    let self = this;
     self.tinyWindow = null;
-    var parentHeight = 0;
+    let parentHeight = 0;
+    this.slidingBarState = {
+        top: 0,
+        range: MIN_RANGE
+    };
 
     function update(ui) {
-        parentHeight = parseInt($("#sliding-bar-content").height());
+        parentHeight = parseInt($(self.contentId).height());
 
         if (ui.size) {
             self.tinyWindow.height = (ui.size.height > parentHeight) ? parentHeight : ui.size.height;
@@ -286,15 +382,22 @@ function Controller($scope, $timeout, wiSlidingbar) {
         if (ui.position) {
             self.tinyWindow.top = (ui.position.top > 0) ? ui.position.top : 0;
         }
-        wiSlidingbar.top = Math.round(self.tinyWindow.top / parentHeight * 100);
-        wiSlidingbar.range = Math.round(self.tinyWindow.height / parentHeight * 100);
+        self.slidingBarState.top = Math.round(self.tinyWindow.top / parentHeight * 100);
+        self.slidingBarState.range = Math.round(self.tinyWindow.height / parentHeight * 100);
 
         // call apply to call all parent scope watcher
         $scope.$apply();
     }
 
-    this.$postLink = function () {
-        parentHeight = parseInt($("#sliding-bar-content").height());
+    this.$onInit = function () {
+        self.contentId = '#sliding-bar-content' + self.name;
+        self.handlerId = '#sliding-handle' + self.name;
+
+        if (self.name) wiComponentService.putComponent(self.name, self);
+    };
+
+    this.onReady = function () {
+        parentHeight = parseInt($(self.contentId).height());
         var initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
 
         self.tinyWindow = {
@@ -302,7 +405,11 @@ function Controller($scope, $timeout, wiSlidingbar) {
             top: 0
         };
 
-        $("#sliding-handle").draggable({
+        // init tiny window height
+        $(self.handlerId).height(initialHeight);
+        self.tinyWindow.height = initialHeight;
+
+        $(self.handlerId).draggable({
             axis: "y",
             containment: "parent"
         }).resizable({
@@ -311,46 +418,53 @@ function Controller($scope, $timeout, wiSlidingbar) {
             handles: "n, s"
         });
 
-        //setSlidingHandleHeight();
-        $timeout(function () {
-            setSlidingHandleHeight();
-        }, 0);
-
-        $("#sliding-handle").on("resize", function (event, ui) {
+        $(self.handlerId).on("resize", function (event, ui) {
             update(ui);
         });
 
-        $("#sliding-handle").on("drag", function (event, ui) {
+        $(self.handlerId).on("drag", function (event, ui) {
             update(ui);
         });
     };
 
-    function setSlidingHandleHeight() {
-        parentHeight = parseInt($("#sliding-bar-content").height());
+    this.setSlidingHandleHeight = function () {
+        parentHeight = parseInt($(self.contentId).height());
 
         var initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
-        $('#sliding-handle').height(initialHeight);
+        $(self.handlerId).height(initialHeight);
         self.tinyWindow.height = initialHeight;
     }
 }
+
 var app = angular.module(moduleName, []);
-
-app.factory(componentName, function () {
-    return slidingBarState;
-});
-
 app.component(componentName, {
-    template:'<div id="sliding-bar-content" ng-transclude></div><div id="sliding-handle" class="ui-widget-content"><div class="sliding-handler-border"></div></div>',
+    template:'<div id="sliding-bar-content{{wiSlidingbar.name}}" class="sliding-bar-content" ng-transclude elem-ready="wiSlidingbar.onReady()"></div><div id="sliding-handle{{wiSlidingbar.name}}" class="ui-widget-content sliding-handle"><div class="sliding-handler-border"></div></div>',
     controller: Controller,
     controllerAs: componentName,
     transclude: true,
-    bindings: {}
+    bindings: {
+        name: '@'
+    }
+});
+
+app.directive('elemReady', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function ($scope, elem, attrs) {
+            elem.ready(function () {
+                $scope.$apply(function () {
+                    var func = $parse(attrs.elemReady);
+                    func($scope);
+                })
+            })
+        }
+    }
 });
 
 exports.name = moduleName;
 exports.componentName = componentName;
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 const componentName = 'wiStatusBar';
 const moduleName = 'wi-status-bar';
 
@@ -366,7 +480,7 @@ app.component(componentName, {
 
 exports.name = moduleName;
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 const tabsetComponentName = 'wiTabset';
 const tabComponentName = 'wiTab';
 const moduleName = 'wi-tabs';
@@ -443,7 +557,7 @@ app.component(tabComponentName, {
 
 exports.name = moduleName;
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 const name = 'wiToolbar';
 const moduleName = 'wi-toolbar';
 
@@ -465,7 +579,7 @@ app.component(name, {
 
 exports.name = moduleName;
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 const componentName = 'wiTreeview';
 const moduleName = 'wi-treeview';
 
@@ -479,7 +593,7 @@ function Controller() {
 
 var app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div class="wi-treeview-container" ng-repeat="item in wiTreeview.config track by $index"><div class="wi-parent-node" ng-click="item.data.childExpanded = !item.data.childExpanded" ng-dblclick="wiTreeview.onDoubleClick($index)"><i aria-hidden="true" class="fa icon-expanded" ng-class="{\'fa-caret-down\': item.data.childExpanded, \'fa-caret-right\': !item.data.childExpanded, \'wi-hidden\': item.children == null || item.children.length == 0}"></i> <img class="{{item.data.icon}}" alt="img item treeview"> <span>{{item.data.label}}</span></div><div ng-show="item.data.childExpanded"><wi-treeview config="item.children"></wi-treeview></div></div>',
+    template:'<div class="wi-treeview-container" ng-repeat="item in wiTreeview.config track by $index"><div class="wi-parent-node" ng-click="item.data.childExpanded = !item.data.childExpanded" ng-dblclick="wiTreeview.onDoubleClick($index)"><div><i aria-hidden="true" class="fa icon-expanded" ng-class="{\'fa-caret-down\': item.data.childExpanded, \'fa-caret-right\': !item.data.childExpanded, \'wi-hidden\': item.children == null || item.children.length == 0}"></i> <img class="{{item.data.icon}}" alt="img item treeview"> <span>{{item.data.label}}</span></div><div class="wi-parent-description text-right" ng-show="item.data.description">{{item.data.description}}</div></div><div ng-show="item.data.childExpanded"><wi-treeview config="item.children"></wi-treeview></div></div>',
     controller: Controller,
     controllerAs: componentName,
     bindings: {
@@ -489,13 +603,13 @@ app.component(componentName, {
 
 exports.name = moduleName;
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 const tabsetComponentName = 'wiWorkingtabset';
 const tabComponentName = 'wiWorkingtab';
 const moduleName = 'wi-workingtabs';
 
-function TabsetController() {
-    var self = this;
+function TabsetController($timeout, wiComponentService) {
+    let self = this;
 
     this.tabs = [];
 
@@ -505,6 +619,11 @@ function TabsetController() {
 
         self.tabs[index].active = true;
         self.tabConfigs[index].active = true;
+
+        let tabSelectCtrl = wiComponentService.getComponent(self.tabs[index].name);
+        if (tabSelectCtrl.type === 'logplot') {
+            $timeout(wiComponentService.getComponent(tabSelectCtrl.name + 'Logplot').getSlidingbarCtrl().setSlidingHandleHeight);
+        }
     };
 
     this.closeTab = function (index) {
@@ -554,11 +673,13 @@ app.component(tabsetComponentName, {
 });
 
 
-function TabController() {
+function TabController(wiComponentService) {
     var self = this;
 
     this.$onInit = function () {
         self.wiTabsetCtrl.addTab(self);
+
+        if (self.name) wiComponentService.putComponent(self.name, self);
     };
 }
 
@@ -571,6 +692,8 @@ app.component(tabComponentName, {
         'wiTabsetCtrl': '^wiWorkingtabset'
     },
     bindings: {
+        name: '@',
+        type: '@',
         heading: '@',
         closable: '@'
     }

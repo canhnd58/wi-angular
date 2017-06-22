@@ -1,15 +1,27 @@
 wi-treeview {
   display: block;
+  padding-left: 6px;
 }
 wi-treeview .wi-treeview-container {
   display: block;
-  padding-left: 21px;
   cursor: pointer;
 }
-wi-treeview .wi-parent-node:hover {
+wi-treeview .wi-treeview-container .wi-parent-node {
+  position: relative;
+  border-bottom: 1px dotted lightgray;
+}
+wi-treeview .wi-treeview-container .wi-parent-node .wi-parent-description {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  border-left: 1px dotted lightgray;
+}
+wi-treeview .wi-treeview-container .wi-parent-node:hover {
   background-color: lightgray;
   opacity: 0.5;
 }
-wi-treeview .wi-parent-node .icon-expanded {
+wi-treeview .wi-treeview-container .wi-parent-node .icon-expanded {
   min-width: 8px;
 }

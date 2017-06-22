@@ -8,7 +8,7 @@ wi-slidingbar .ui-widget-content {
   width: 100%;
   background-color: transparent;
 }
-wi-slidingbar #sliding-bar-content {
+wi-slidingbar .sliding-bar-content {
   position: absolute;
   top: 0;
   left: 0;
@@ -16,7 +16,7 @@ wi-slidingbar #sliding-bar-content {
   bottom: 0;
   overflow: hidden;
 }
-wi-slidingbar #sliding-handle {
+wi-slidingbar .sliding-handle {
   border: 0;
 }
 wi-slidingbar .sliding-handler-border {

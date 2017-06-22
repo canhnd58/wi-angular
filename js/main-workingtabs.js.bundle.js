@@ -1,17 +1,49 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-wiButton = require('./wi-button.js');
-wiToolbar = require('./wi-toolbar.js');
+wiButton = require('./wi-button');
 wiSlidingbar = require('./wi-slidingbar.js');
+wiWorkingtabs = require('./wi-workingtabs');
 wiLogplot = require('./wi-logplot.js');
 
 wiComponentService = require('./wi-component-service');
 
-var app = angular.module('helloapp',
-    [wiLogplot.name, wiButton.name, wiToolbar.name, wiSlidingbar.name, wiComponentService.name]);
-app.controller('WiDummy', function ($scope) {
+var WORKING_TABS = [
+    {
+        type: 'dogs',
+        name: 'dogsTab',
+        heading: 'Item 1.2.1 (dogs)',
+        closable: 'true',
+        active: false
+    },
+    {
+        type: 'cars',
+        name: 'carTab',
+        heading: 'Item 1.2.2 (cars)',
+        closable: 'true',
+        active: false
+    },
+    {
+        type: 'logplot',
+        name: 'MyLogplot1',
+        heading: 'blank logplot',
+        closable: 'true',
+        active: false
+    },
+    {
+        type: 'logplot',
+        name: 'MyLogplot2',
+        heading: 'blank logplot',
+        closable: 'true',
+        active: false
+    }
+];
 
+var app = angular.module('helloapp', [wiButton.name, wiSlidingbar.name, wiWorkingtabs.name, wiLogplot.name, wiComponentService.name]);
+app.controller('WiDummy', function ($scope, wiComponentService) {
+    $scope.workingTabs = WORKING_TABS;
 });
-},{"./wi-button.js":2,"./wi-component-service":3,"./wi-logplot.js":4,"./wi-slidingbar.js":5,"./wi-toolbar.js":6}],2:[function(require,module,exports){
+
+
+},{"./wi-button":2,"./wi-component-service":3,"./wi-logplot.js":4,"./wi-slidingbar.js":5,"./wi-workingtabs":6}],2:[function(require,module,exports){
 const wiButtonName = 'wiButton';
 const moduleName = 'wi-button';
 
@@ -208,24 +240,101 @@ exports.name = moduleName;
 exports.componentName = componentName;
 
 },{}],6:[function(require,module,exports){
-const name = 'wiToolbar';
-const moduleName = 'wi-toolbar';
+const tabsetComponentName = 'wiWorkingtabset';
+const tabComponentName = 'wiWorkingtab';
+const moduleName = 'wi-workingtabs';
 
-function Controller() {
-    var self = this;
+function TabsetController($timeout, wiComponentService) {
+    let self = this;
+
+    this.tabs = [];
+
+    this.selectTab = function (index) {
+        deactiveAllTabs(self.tabs);
+        deactiveAllTabs(self.tabConfigs);
+
+        self.tabs[index].active = true;
+        self.tabConfigs[index].active = true;
+
+        let tabSelectCtrl = wiComponentService.getComponent(self.tabs[index].name);
+        if (tabSelectCtrl.type === 'logplot') {
+            $timeout(wiComponentService.getComponent(tabSelectCtrl.name + 'Logplot').getSlidingbarCtrl().setSlidingHandleHeight);
+        }
+    };
+
+    this.closeTab = function (index) {
+        deactiveAllTabs(self.tabs);
+        deactiveAllTabs(self.tabConfigs);
+
+        self.tabs.splice(index, 1);
+        self.tabConfigs.splice(index, 1);
+
+        if (self.tabs.length !== 0) {
+            if (index < self.tabs.length) {
+                self.tabs[index].active = true;
+                self.tabConfigs[index].active = true;
+            } else {
+                self.tabs[self.tabs.length - 1].active = true;
+                self.tabConfigs[self.tabs.length - 1].active = true;
+            }
+        }
+    };
+
+    this.addTab = function (tab) {
+        deactiveAllTabs(self.tabs);
+        deactiveAllTabs(self.tabConfigs);
+
+        tab.active = true;
+        self.tabs.push(tab);
+
+        self.tabConfigs[self.tabConfigs.length - 1].active = true;
+    };
+
+    function deactiveAllTabs(tabs) {
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].active = false;
+        }
+    }
 }
 
 var app = angular.module(moduleName, []);
-
-app.component(name, {
-    template:'<div class="toolbar-wrapper"><div ng-transclude></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p></div>',
+app.component(tabsetComponentName, {
+    template:'<ul class="nav nav-tabs"><li class="wi-tab" ng-repeat="tab in wiWorkingtabset.tabs track by $index" ng-class="{\'active\': tab.active}" ng-click="wiWorkingtabset.selectTab($index)"><a>{{tab.heading}}</a> <i class="ti-close" ng-show="tab.closable == \'true\'" ng-click="wiWorkingtabset.closeTab($index)"></i></li></ul><div class="wi-working-tabset-content" ng-transclude></div>',
+    controller: TabsetController,
+    controllerAs: tabsetComponentName,
     transclude: true,
-    controller: Controller,
-    controllerAs: name,
     bindings: {
-        label: '@'
+        tabConfigs: '<'
     }
 });
+
+
+function TabController(wiComponentService) {
+    var self = this;
+
+    this.$onInit = function () {
+        self.wiTabsetCtrl.addTab(self);
+
+        if (self.name) wiComponentService.putComponent(self.name, self);
+    };
+}
+
+app.component(tabComponentName, {
+    template:'<div class="wi-workingtab-content" ng-transclude ng-show="wiWorkingtab.active"></div>',
+    controller: TabController,
+    controllerAs: tabComponentName,
+    transclude: true,
+    require: {
+        'wiTabsetCtrl': '^wiWorkingtabset'
+    },
+    bindings: {
+        name: '@',
+        type: '@',
+        heading: '@',
+        closable: '@'
+    }
+});
+
 
 exports.name = moduleName;
 

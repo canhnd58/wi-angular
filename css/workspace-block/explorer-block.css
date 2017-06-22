@@ -1,5 +1,12 @@
 .explorer-block {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 240px;
   border: 2px solid #5e5e5e;
+}
+.explorer-block wi-treeview {
+  flex: 1;
+}
+.explorer-block wi-list {
+  flex: 1;
 }
