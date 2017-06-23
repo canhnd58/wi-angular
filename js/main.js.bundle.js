@@ -170,6 +170,14 @@ app.controller('AppController', function ($scope, $timeout) {
             imgUrl: '',
             key: 'key',
             value: 'value'
+        }
+    ];
+
+    $scope.listItems2 = [
+        {
+            imgUrl: '',
+            key: 'key',
+            value: 'value'
         },
         {
             imgUrl: '',
@@ -206,9 +214,10 @@ const wiButtonName = 'wiButton';
 const moduleName = 'wi-button';
 
 function ButtonController(wiComponentService) {
-    var self = this;
+    let self = this;
 
     this.default = {
+        type: 'normal',
         label: '',
         layout: 'icon-top',
         icon: 'project-new-32x32'
@@ -223,13 +232,14 @@ function ButtonController(wiComponentService) {
     }
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(wiButtonName, {
-    template:'<div><button ng-click="wiButton.onClick()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
+    template:'<div><button ng-click="wiButton.onClick()" class="button-{{wiButton.type || wiButton.config.type || wiButton.default.type}}"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
     controller: ButtonController,
     controllerAs: wiButtonName,
     bindings: {
         config: '<',
+        type: '@',
         name: '@',
         label: '@',
         layout: '@',
@@ -306,23 +316,26 @@ const componentName = 'wiList';
 const moduleName = 'wi-list';
 
 function Controller(wiComponentService) {
-    var self = this;
+    let self = this;
 
     this.$onInit = function() {
         if (self.name) wiComponentService.putComponent(self.name, self);
+    };
+
+    this.addItem = function (key, value) {
+        self.items.push({key, value});
     }
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<h4>{{wiList.heading}}</h4><table><tr ng-repeat="item in wiList.items"><td>{{item.key}}</td><td>{{item.value}}</td></tr></table>',
+    template:'<p class="list-heading">{{wiList.heading}}</p><table><tr ng-repeat="item in wiList.items"><td>{{item.key}}</td><td>{{item.value}}</td></tr></table>',
     controller: Controller,
     controllerAs: componentName,
     bindings: {
         name : '@',
         heading: '@',
-        items: '<',
-        handler: '<'
+        items: '<'
     }
 });
 
@@ -562,17 +575,26 @@ const name = 'wiToolbar';
 const moduleName = 'wi-toolbar';
 
 function Controller() {
-    var self = this;
+    let self = this;
+
+    this.default = {
+        type: 'vertical',
+        label: ''
+    }
+
+
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 
 app.component(name, {
-    template:'<div class="toolbar-wrapper"><div ng-transclude></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p></div>',
+    template:'<div ng-transclude class="toolbar-{{wiToolbar.type || wiToolbar.default.type}}"></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p>',
     transclude: true,
     controller: Controller,
     controllerAs: name,
     bindings: {
+        name: '@',
+        type: '@',
         label: '@'
     }
 });
@@ -583,20 +605,74 @@ exports.name = moduleName;
 const componentName = 'wiTreeview';
 const moduleName = 'wi-treeview';
 
-function Controller() {
-    var self = this;
+function Controller(wiComponentService) {
+    let self = this;
+
+    this.$onInit = function () {
+        self.items = self.config;
+        if (self.name) wiComponentService.putComponent(self.name, self);
+    };
 
     this.onDoubleClick = function ($index) {
         if (self.config[$index].data.handler) self.config[$index].data.handler();
     };
+
+    this.addItem = function (parentName, item) {
+        let parentItem = getItemByName(parentName);
+
+        console.log('items', self.items);
+        console.log('parentName', parentName)
+        console.log('item', item)
+        if (parentItem) {
+            parentItem.children.push(item);
+
+            console.log('addItem, push to ', parentItem);
+        }
+    };
+
+    function getItemByName(name) {
+        let itemSelect = null;
+
+        for (let item of self.items) {
+            if (item.name === name) {
+                return item;
+            }
+
+            itemSelect = findChildItemByName(item, name);
+            if (itemSelect) {
+                return itemSelect;
+            }
+        }
+
+        return itemSelect;
+    }
+
+    function findChildItemByName(item, name) {
+        if (!item || !item.children) return;
+
+        let childSelect = null;
+        for (let child of item.children) {
+            if (child.name === name) {
+                return child;
+            } else if (child.children.length !== 0) {
+                childSelect = findChildItemByName(child, name);
+                if (childSelect) {
+                    return childSelect;
+                }
+            }
+        }
+
+        return childSelect;
+    }
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div class="wi-treeview-container" ng-repeat="item in wiTreeview.config track by $index"><div class="wi-parent-node" ng-click="item.data.childExpanded = !item.data.childExpanded" ng-dblclick="wiTreeview.onDoubleClick($index)"><div><i aria-hidden="true" class="fa icon-expanded" ng-class="{\'fa-caret-down\': item.data.childExpanded, \'fa-caret-right\': !item.data.childExpanded, \'wi-hidden\': item.children == null || item.children.length == 0}"></i> <img class="{{item.data.icon}}" alt="img item treeview"> <span>{{item.data.label}}</span></div><div class="wi-parent-description text-right" ng-show="item.data.description">{{item.data.description}}</div></div><div ng-show="item.data.childExpanded"><wi-treeview config="item.children"></wi-treeview></div></div>',
+    template:'<div class="wi-treeview-container" ng-repeat="item in wiTreeview.items track by $index"><div class="wi-parent-node" ng-click="item.data.childExpanded = !item.data.childExpanded" ng-dblclick="wiTreeview.onDoubleClick($index)"><div><i aria-hidden="true" class="fa icon-expanded" ng-class="{\'fa-caret-down\': item.data.childExpanded, \'fa-caret-right\': !item.data.childExpanded, \'wi-hidden\': item.children == null || item.children.length == 0}"></i> <img class="{{item.data.icon}}" alt="img item treeview"> <span>{{item.data.label}}</span></div><div class="wi-parent-description text-right" ng-show="item.data.description">{{item.data.description}}</div></div><div ng-show="item.data.childExpanded"><wi-treeview config="item.children"></wi-treeview></div></div>',
     controller: Controller,
     controllerAs: componentName,
     bindings: {
+        name: '@',
         config: '<'
     }
 });

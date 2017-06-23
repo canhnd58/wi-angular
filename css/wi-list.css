@@ -12,3 +12,7 @@ th {
 tr:nth-child(even) {
   background-color: #dddddd;
 }
+.list-heading {
+  padding: 2px;
+  margin: 0;
+}

@@ -4,9 +4,10 @@
   width: 240px;
   border: 2px solid #5e5e5e;
 }
-.explorer-block wi-treeview {
+.explorer-block .treeview-wrapper {
   flex: 1;
+  border: 1px solid darkgreen;
 }
-.explorer-block wi-list {
-  flex: 1;
+.explorer-block .list-wrapper {
+  border: 1px solid orangered;
 }

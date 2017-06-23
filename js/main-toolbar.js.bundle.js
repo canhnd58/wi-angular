@@ -2,18 +2,21 @@
 wiRibbon = require('./wi-button.js');
 wiToolbar = require('./wi-toolbar.js');
 
-app = angular.module('helloapp', [wiToolbar.name, wiRibbon.name]);
-app.controller('WiDummy', function ($scope) {
+wiComponentService = require('./wi-component-service');
+
+app = angular.module('helloapp', [wiToolbar.name, wiRibbon.name, wiComponentService.name]);
+app.controller('WiDummy', function ($scope, wiComponentService) {
 
 });
-},{"./wi-button.js":2,"./wi-toolbar.js":3}],2:[function(require,module,exports){
+},{"./wi-button.js":2,"./wi-component-service":3,"./wi-toolbar.js":4}],2:[function(require,module,exports){
 const wiButtonName = 'wiButton';
 const moduleName = 'wi-button';
 
 function ButtonController(wiComponentService) {
-    var self = this;
+    let self = this;
 
     this.default = {
+        type: 'normal',
         label: '',
         layout: 'icon-top',
         icon: 'project-new-32x32'
@@ -28,13 +31,14 @@ function ButtonController(wiComponentService) {
     }
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(wiButtonName, {
-    template:'<div><button ng-click="wiButton.onClick()"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
+    template:'<div><button ng-click="wiButton.onClick()" class="button-{{wiButton.type || wiButton.config.type || wiButton.default.type}}"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
     controller: ButtonController,
     controllerAs: wiButtonName,
     bindings: {
         config: '<',
+        type: '@',
         name: '@',
         label: '@',
         layout: '@',
@@ -46,21 +50,51 @@ app.component(wiButtonName, {
 exports.name = moduleName;
 
 },{}],3:[function(require,module,exports){
+const wiServiceName = 'wiComponentService';
+const moduleName = 'wi-component-service';
+
+var app = angular.module(moduleName, []);
+app.factory(wiServiceName, function() {
+    var __Controllers = new Object();
+    return { 
+        getComponent: function(componentName){
+            console.log("Do you want " + componentName + "'s controller?");
+            return __Controllers[componentName];
+        },
+        putComponent: function(componentName, controller) {
+            console.log("put component:" + componentName + " - ", controller); 
+            __Controllers[componentName] = controller;
+        }
+    };
+});
+
+exports.name = moduleName;
+
+},{}],4:[function(require,module,exports){
 const name = 'wiToolbar';
 const moduleName = 'wi-toolbar';
 
 function Controller() {
-    var self = this;
+    let self = this;
+
+    this.default = {
+        type: 'vertical',
+        label: ''
+    }
+
+
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 
 app.component(name, {
-    template:'<div class="toolbar-wrapper"><div ng-transclude></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p></div>',
+    template:'<div ng-transclude class="toolbar-{{wiToolbar.type || wiToolbar.default.type}}"></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p>',
     transclude: true,
     controller: Controller,
     controllerAs: name,
     bindings: {
+        name: '@',
+        type: '@',
         label: '@'
     }
 });

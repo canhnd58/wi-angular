@@ -29,3 +29,9 @@ wi-toolbar-button p {
   display: inline-block;
   margin: 0;
 }
+.button-normal {
+  padding: 10px;
+}
+.button-small {
+  padding: 0px;
+}

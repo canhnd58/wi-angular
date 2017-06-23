@@ -2,23 +2,26 @@ const componentName = 'wiList';
 const moduleName = 'wi-list';
 
 function Controller(wiComponentService) {
-    var self = this;
+    let self = this;
 
     this.$onInit = function() {
         if (self.name) wiComponentService.putComponent(self.name, self);
+    };
+
+    this.addItem = function (key, value) {
+        self.items.push({key, value});
     }
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<h4>{{wiList.heading}}</h4><table><tr ng-repeat="item in wiList.items"><td>{{item.key}}</td><td>{{item.value}}</td></tr></table>',
+    template:'<p class="list-heading">{{wiList.heading}}</p><table><tr ng-repeat="item in wiList.items"><td>{{item.key}}</td><td>{{item.value}}</td></tr></table>',
     controller: Controller,
     controllerAs: componentName,
     bindings: {
         name : '@',
         heading: '@',
-        items: '<',
-        handler: '<'
+        items: '<'
     }
 });
 
