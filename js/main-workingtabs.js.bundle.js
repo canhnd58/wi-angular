@@ -1,12 +1,12 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-wiButton = require('./wi-button');
-wiSlidingbar = require('./wi-slidingbar.js');
-wiWorkingtabs = require('./wi-workingtabs');
-wiLogplot = require('./wi-logplot.js');
+let wiButton = require('./wi-button');
+let wiSlidingbar = require('./wi-slidingbar.js');
+let wiWorkingtabs = require('./wi-workingtabs');
+let wiLogplot = require('./wi-logplot.js');
 
-wiComponentService = require('./wi-component-service');
+let wiComponentService = require('./wi-component-service');
 
-var WORKING_TABS = [
+let WORKING_TABS = [
     {
         type: 'dogs',
         name: 'dogsTab',
@@ -37,7 +37,7 @@ var WORKING_TABS = [
     }
 ];
 
-var app = angular.module('helloapp', [wiButton.name, wiSlidingbar.name, wiWorkingtabs.name, wiLogplot.name, wiComponentService.name]);
+let app = angular.module('helloapp', [wiButton.name, wiSlidingbar.name, wiWorkingtabs.name, wiLogplot.name, wiComponentService.name]);
 app.controller('WiDummy', function ($scope, wiComponentService) {
     $scope.workingTabs = WORKING_TABS;
 });
@@ -88,44 +88,106 @@ exports.name = moduleName;
 const wiServiceName = 'wiComponentService';
 const moduleName = 'wi-component-service';
 
-var app = angular.module(moduleName, []);
-app.factory(wiServiceName, function() {
-    var __Controllers = new Object();
-    return { 
-        getComponent: function(componentName){
-            console.log("Do you want " + componentName + "'s controller?");
+let app = angular.module(moduleName, []);
+app.factory(wiServiceName, function () {
+    let __Controllers = {};
+    let handlers = {};
+
+    return {
+        treeFunctions: {},
+
+        getComponent: function (componentName) {
             return __Controllers[componentName];
         },
-        putComponent: function(componentName, controller) {
-            console.log("put component:" + componentName + " - ", controller); 
+        putComponent: function (componentName, controller) {
             __Controllers[componentName] = controller;
+        },
+
+        on: function (eventName, handlerCb) {
+            let eventHandlers = handlers[eventName];
+            if (!Array.isArray(eventHandlers)) {
+                handlers[eventName] = [];
+            }
+
+            handlers[eventName].push(handlerCb);
+        },
+        emit: function (eventName, data) {
+            let eventHandlers = handlers[eventName];
+            if (Array.isArray(eventHandlers)) {
+                eventHandlers.forEach(function (handler) {
+                    handler(data);
+                })
+            }
         }
     };
 });
 
 exports.name = moduleName;
-
 },{}],4:[function(require,module,exports){
 const componentName = 'wiLogplot';
 const moduleName = 'wi-logplot';
 
+//Utils for object checking and object cloning
+function objcpy(destObj, sourceObj) {
+    if (destObj) {
+        for (let attr in sourceObj) {
+            destObj[attr] = sourceObj[attr];
+        }
+    }
+}
+
+function isEqual(a, b) {
+    if (!a || !b) return false;
+    let aProps = Object.getOwnPropertyNames(a);
+    let bProps = Object.getOwnPropertyNames(b);
+
+    if (aProps.length !== bProps.length) {
+        return false;
+    }
+
+    for (let i = 0; i < aProps.length; i++) {
+        let propName = aProps[i];
+
+        if (a[propName] !== b[propName]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 function Controller(wiComponentService) {
-    var self = this;
+    let self = this;
+    let previousSlidingBarState = {};
 
     this.$onInit = function () {
         self.slidingbarName = self.name + 'Slidingbar';
+        self.wiD3AreaName = self.name + 'D3Area';
 
         if (self.name) wiComponentService.putComponent(self.name, self);
     };
 
+    this.$doCheck = function () {
+        if (!self.slidingBar) return;
+        if (!isEqual(previousSlidingBarState, self.slidingBar.slidingBarState)) {
+            objcpy(previousSlidingBarState, self.slidingBar.slidingBarState);
+            let wiD3Controller = wiComponentService.getComponent(self.wiD3AreaName);
+            let max = wiD3Controller.getMaxDepth();
+            let low = max * previousSlidingBarState.top / 100;
+            let high = max * ( previousSlidingBarState.top + previousSlidingBarState.range ) / 100;
+            wiD3Controller.setDepthRange([low, high]);
+            wiD3Controller.plotAll();
+        }
+    };
+
     this.getSlidingbarCtrl = function () {
         return self.slidingBar = wiComponentService.getComponent(self.slidingbarName);
-    }
+    };
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div class="logplot-toolbar-wrapper"><wi-toolbal><wi-button layout="icon-left"></wi-button><wi-button layout="icon-left"></wi-button></wi-toolbal><wi-toolbar><wi-button layout="icon-left"></wi-button><wi-button layout="icon-left"></wi-button></wi-toolbar></div><div class="logplot-main-content"><wi-slidingbar name="{{wiLogplot.slidingbarName}}" ng-init="wiLogplot.getSlidingbarCtrl()"><p>Some thing like curve</p></wi-slidingbar><div class="logplot-sub-content">Some tracks: {{wiLogplot.slidingBar.slidingBarState.top}} -- {{wiLogplot.slidingBar.slidingBarState.range}}</div></div>',
+    template:'<div class="logplot-toolbar-wrapper"><wi-toolbar name="Toolbar" label icon><wi-button name="Button1Button" label icon="help-32x32" handler="handlers.Button1ButtonClicked"></wi-button><wi-button name="Button2Button" label icon="info-frp-32x32" handler="handlers.Button2ButtonClicked"></wi-button><wi-button name="Button3Button" label icon handler="handlers.Button3ButtonClicked"></wi-button></wi-toolbar></div><div class="logplot-main-content"><div class="slidingbar"><wi-slidingbar name="{{wiLogplot.slidingbarName}}" ng-init="wiLogplot.getSlidingbarCtrl()"></wi-slidingbar></div><div class="track-area"><wi-d3 style="width: 100%; flex: 1; display: flex;" name="{{wiLogplot.wiD3AreaName}}"></wi-d3></div></div>',
     controller: Controller,
     controllerAs: componentName,
     transclude: true,
@@ -135,15 +197,17 @@ app.component(componentName, {
 });
 
 exports.name = moduleName;
+
 },{}],5:[function(require,module,exports){
 const componentName = 'wiSlidingbar';
 const moduleName = 'wi-slidingbar';
 
-const MIN_RANGE = 30;
+const MIN_RANGE = 5;
 
 function Controller($scope, wiComponentService) {
     let self = this;
-    self.tinyWindow = null;
+
+    this.tinyWindow = null;
     let parentHeight = 0;
     this.slidingBarState = {
         top: 0,
@@ -168,25 +232,30 @@ function Controller($scope, wiComponentService) {
 
     this.$onInit = function () {
         self.contentId = '#sliding-bar-content' + self.name;
-        self.handlerId = '#sliding-handle' + self.name;
+        self.handleId = '#sliding-handle' + self.name;
 
         if (self.name) wiComponentService.putComponent(self.name, self);
     };
 
     this.onReady = function () {
         parentHeight = parseInt($(self.contentId).height());
-        var initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
+        let initialHeight = Math.round(parentHeight * (MIN_RANGE) / 100);
 
         self.tinyWindow = {
-            height: initialHeight,
-            top: 0
+            top: (parentHeight - initialHeight * 4) * Math.random(),
+            height: initialHeight * 4
         };
 
-        // init tiny window height
-        $(self.handlerId).height(initialHeight);
-        self.tinyWindow.height = initialHeight;
 
-        $(self.handlerId).draggable({
+        // init tiny window height
+        $(self.handleId).height(self.tinyWindow.height);
+        console.log($(self.handleId));
+        $(self.handleId).css('top', self.tinyWindow.top + 'px');
+
+        self.slidingBarState.top = Math.round(self.tinyWindow.top / parentHeight * 100);
+        self.slidingBarState.range = Math.round(self.tinyWindow.height / parentHeight * 100);
+
+        $(self.handleId).draggable({
             axis: "y",
             containment: "parent"
         }).resizable({
@@ -195,27 +264,29 @@ function Controller($scope, wiComponentService) {
             handles: "n, s"
         });
 
-        $(self.handlerId).on("resize", function (event, ui) {
+        $(self.handleId).on("resize", function (event, ui) {
             update(ui);
         });
 
-        $(self.handlerId).on("drag", function (event, ui) {
+        $(self.handleId).on("drag", function (event, ui) {
             update(ui);
         });
     };
+    /*
+     this.setSlidingHandleHeight = function () {
+     console.log('set slidingHandleHeight');
+     parentHeight = parseInt($(self.contentId).height());
 
-    this.setSlidingHandleHeight = function () {
-        parentHeight = parseInt($(self.contentId).height());
-
-        var initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
-        $(self.handlerId).height(initialHeight);
-        self.tinyWindow.height = initialHeight;
-    }
+     let initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
+     $(self.handleId).height(initialHeight);
+     self.tinyWindow.height = initialHeight;
+     }
+     */
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div id="sliding-bar-content{{wiSlidingbar.name}}" class="sliding-bar-content" ng-transclude elem-ready="wiSlidingbar.onReady()"></div><div id="sliding-handle{{wiSlidingbar.name}}" class="ui-widget-content sliding-handle"><div class="sliding-handler-border"></div></div>',
+    template:'<div id="sliding-bar-content{{wiSlidingbar.name}}" class="sliding-bar-content" ng-transclude elem-ready="wiSlidingbar.onReady()"></div><div id="sliding-handle{{wiSlidingbar.name}}" class="ui-widget-content sliding-handle"><div class="sliding-handle-border"></div></div>',
     controller: Controller,
     controllerAs: componentName,
     transclude: true,
@@ -230,7 +301,7 @@ app.directive('elemReady', function ($parse) {
         link: function ($scope, elem, attrs) {
             elem.ready(function () {
                 $scope.$apply(function () {
-                    var func = $parse(attrs.elemReady);
+                    let func = $parse(attrs.elemReady);
                     func($scope);
                 })
             })
@@ -293,13 +364,13 @@ function TabsetController($timeout, wiComponentService) {
     };
 
     function deactiveAllTabs(tabs) {
-        for (var i = 0; i < tabs.length; i++) {
+        for (let i = 0; i < tabs.length; i++) {
             tabs[i].active = false;
         }
     }
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(tabsetComponentName, {
     template:'<ul class="nav nav-tabs"><li class="wi-tab" ng-repeat="tab in wiWorkingtabset.tabs track by $index" ng-class="{\'active\': tab.active}" ng-click="wiWorkingtabset.selectTab($index)"><a>{{tab.heading}}</a> <i class="ti-close" ng-show="tab.closable == \'true\'" ng-click="wiWorkingtabset.closeTab($index)"></i></li></ul><div class="wi-working-tabset-content" ng-transclude></div>',
     controller: TabsetController,
@@ -312,7 +383,7 @@ app.component(tabsetComponentName, {
 
 
 function TabController(wiComponentService) {
-    var self = this;
+    let self = this;
 
     this.$onInit = function () {
         self.wiTabsetCtrl.addTab(self);

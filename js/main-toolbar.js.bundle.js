@@ -1,10 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-wiRibbon = require('./wi-button.js');
-wiToolbar = require('./wi-toolbar.js');
+let wiRibbon = require('./wi-button.js');
+let wiToolbar = require('./wi-toolbar.js');
 
-wiComponentService = require('./wi-component-service');
+let wiComponentService = require('./wi-component-service');
 
-app = angular.module('helloapp', [wiToolbar.name, wiRibbon.name, wiComponentService.name]);
+let app = angular.module('helloapp', [wiToolbar.name, wiRibbon.name, wiComponentService.name]);
 app.controller('WiDummy', function ($scope, wiComponentService) {
 
 });
@@ -53,23 +53,41 @@ exports.name = moduleName;
 const wiServiceName = 'wiComponentService';
 const moduleName = 'wi-component-service';
 
-var app = angular.module(moduleName, []);
-app.factory(wiServiceName, function() {
-    var __Controllers = new Object();
-    return { 
-        getComponent: function(componentName){
-            console.log("Do you want " + componentName + "'s controller?");
+let app = angular.module(moduleName, []);
+app.factory(wiServiceName, function () {
+    let __Controllers = {};
+    let handlers = {};
+
+    return {
+        treeFunctions: {},
+
+        getComponent: function (componentName) {
             return __Controllers[componentName];
         },
-        putComponent: function(componentName, controller) {
-            console.log("put component:" + componentName + " - ", controller); 
+        putComponent: function (componentName, controller) {
             __Controllers[componentName] = controller;
+        },
+
+        on: function (eventName, handlerCb) {
+            let eventHandlers = handlers[eventName];
+            if (!Array.isArray(eventHandlers)) {
+                handlers[eventName] = [];
+            }
+
+            handlers[eventName].push(handlerCb);
+        },
+        emit: function (eventName, data) {
+            let eventHandlers = handlers[eventName];
+            if (Array.isArray(eventHandlers)) {
+                eventHandlers.forEach(function (handler) {
+                    handler(data);
+                })
+            }
         }
     };
 });
 
 exports.name = moduleName;
-
 },{}],4:[function(require,module,exports){
 const name = 'wiToolbar';
 const moduleName = 'wi-toolbar';
@@ -81,14 +99,12 @@ function Controller() {
         type: 'vertical',
         label: ''
     }
-
-
 }
 
 let app = angular.module(moduleName, []);
 
 app.component(name, {
-    template:'<div ng-transclude class="toolbar-{{wiToolbar.type || wiToolbar.default.type}}"></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p>',
+    template:'<div class="toolbar-wrapper"><div ng-transclude class="toolbar-{{wiToolbar.type || wiToolbar.default.type}}"></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p></div>',
     transclude: true,
     controller: Controller,
     controllerAs: name,
@@ -100,5 +116,4 @@ app.component(name, {
 });
 
 exports.name = moduleName;
-
 },{}]},{},[1]);

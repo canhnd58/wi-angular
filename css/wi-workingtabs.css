@@ -1,19 +1,5 @@
 wi-workingtabset {
-  display: flex;
-  flex-direction: column;
   /* khu border */
-}
-wi-workingtabset .wi-working-tabset-content {
-  flex: 1;
-  display: flex;
-}
-wi-workingtabset .wi-working-tabset-content wi-workingtab {
-  flex: 1;
-  display: flex;
-}
-wi-workingtabset .wi-working-tabset-content wi-workingtab .wi-workingtab-content {
-  flex: 1;
-  display: flex;
 }
 wi-workingtabset .wi-working-tabset-content wi-workingtab .working-tab-content {
   flex: 1;

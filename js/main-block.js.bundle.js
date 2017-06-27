@@ -1,8 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-wiBlock = require('./wi-block.js');
-wiButton = require('./wi-button.js');
+let wiBlock = require('./wi-block.js');
+let wiButton = require('./wi-button.js');
 
-var app = angular.module('helloapp', ['ui.bootstrap', wiBlock.name, wiButton.name]);
+let app = angular.module('helloapp', ['ui.bootstrap', wiBlock.name, wiButton.name]);
 app.controller('WiBlockController', WiBlockController);
 
 function WiBlockController($scope) {
@@ -20,10 +20,10 @@ const name = 'wiBlock';
 const moduleName = 'wi-block';
 
 function Controller() {
-    var self = this;
+    let self = this;
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 
 app.component(name, {
     template:'<div><div ng-transclude></div></div>',

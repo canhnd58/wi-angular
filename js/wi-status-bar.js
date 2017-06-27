@@ -2,11 +2,12 @@ const componentName = 'wiStatusBar';
 const moduleName = 'wi-status-bar';
 
 function Controller() {
-    var self = this;
+    let self = this;
 }
-var app = angular.module(moduleName, []);
+
+let app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<h3>status bar</h3>',
+    template:'<span>status bar<span></span></span>',
     controller: Controller,
     controllerAs: componentName
 });

@@ -49,13 +49,13 @@ function TabsetController($timeout, wiComponentService) {
     };
 
     function deactiveAllTabs(tabs) {
-        for (var i = 0; i < tabs.length; i++) {
+        for (let i = 0; i < tabs.length; i++) {
             tabs[i].active = false;
         }
     }
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(tabsetComponentName, {
     template:'<ul class="nav nav-tabs"><li class="wi-tab" ng-repeat="tab in wiWorkingtabset.tabs track by $index" ng-class="{\'active\': tab.active}" ng-click="wiWorkingtabset.selectTab($index)"><a>{{tab.heading}}</a> <i class="ti-close" ng-show="tab.closable == \'true\'" ng-click="wiWorkingtabset.closeTab($index)"></i></li></ul><div class="wi-working-tabset-content" ng-transclude></div>',
     controller: TabsetController,
@@ -68,7 +68,7 @@ app.component(tabsetComponentName, {
 
 
 function TabController(wiComponentService) {
-    var self = this;
+    let self = this;
 
     this.$onInit = function () {
         self.wiTabsetCtrl.addTab(self);

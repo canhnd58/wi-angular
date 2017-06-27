@@ -1,90 +1,92 @@
-appConfig = require('./app.config');
-wiButton = require('./wi-button.js');
-wiDropdown = require('./wi-dropdown.js');
-wiToolbar = require('./wi-toolbar.js');
-wiTabs = require('./wi-tabs.js');
-wiWorkingtabs = require('./wi-workingtabs.js');
-wiTreeview = require('./wi-treeview');
-wiStatusBar = require('./wi-status-bar');
-wiSlidingbar = require('./wi-slidingbar');
-wiLogplot = require('./wi-logplot.js');
+let appConfig = require('./app.config');
+let wiButton = require('./wi-button');
+let wiDropdown = require('./wi-dropdown');
+let wiToolbar = require('./wi-toolbar');
+let wiWorkingtabs = require('./wi-workingtabs');
+let wiTreeview = require('./wi-treeview');
+let wiStatusBar = require('./wi-status-bar');
+let wiSlidingbar = require('./wi-slidingbar');
 
-wiList = require('./wi-list');
+let wiList = require('./wi-list');
 
-wiComponentService = require('./wi-component-service.js');
+let wiD3 = require('./wi-d3');
+let wiLogplot = require('./wi-logplot');
+let wiExplorer = require('./wi-explorer');
+let wiProperties = require('./wi-properties');
 
-var app = angular.module('wiapp',
+let layoutManager = require('./layout');
+
+let handlers = require('./handlers');
+let logplotHandlers = require('./wi-logplot-handlers');
+
+let graph = require('./graph');
+
+
+function genSamples(nSamples) {
+    let samples = [];
+    for (let i = 0; i < nSamples; i++) {
+        samples.push({y: i, x: Math.random()});
+    }
+    return samples;
+}
+
+let wiComponentService = require('./wi-component-service');
+
+let app = angular.module('wiapp',
     [
         wiButton.name,
         wiDropdown.name,
         wiToolbar.name,
-        wiTabs.name,
         wiWorkingtabs.name,
         wiTreeview.name,
         wiStatusBar.name,
         wiSlidingbar.name,
-        wiLogplot.name,
         wiList.name,
+
+        wiD3.name,
+        wiLogplot.name,
+        wiExplorer.name,
+        wiProperties.name,
+
         wiComponentService.name
     ]);
 
-app.controller('AppController', function ($scope, $timeout) {
-    $scope.myConfig = appConfig.TREE_CONFIG_TEST;
+app.controller('AppController', function ($scope, $timeout, $compile, wiComponentService) {
+    // config explorer block - treeview
+    $scope.myTreeviewConfig = appConfig.TREE_CONFIG_TEST;
+    wiComponentService.treeFunctions = bindAll(appConfig.TREE_FUNCTIONS, $scope, wiComponentService);
 
-    $scope.config = {
-        ProjectTab: {
-            heading: 'Project'
-        },
-        WellTab: {
-            heading: 'Well'
-        }
-    };
+    // config properties - list block
+    $scope.myPropertiesConfig = appConfig.LIST_CONFIG_TEST;
 
-    $scope.listItems = [
-        {
-            imgUrl: '',
-            key: 'key',
-            value: 'value'
-        },
-        {
-            imgUrl: '',
-            key: 'key',
-            value: 'value'
-        }
-    ];
+    $scope.handlers = bindAll(handlers, $scope, wiComponentService);
 
-    $scope.listItems2 = [
-        {
-            imgUrl: '',
-            key: 'key',
-            value: 'value'
-        },
-        {
-            imgUrl: '',
-            key: 'key',
-            value: 'value'
-        },
-        {
-            imgUrl: '',
-            key: 'key',
-            value: 'value'
-        }
-    ];
+    wiComponentService.putComponent('GRAPH', graph);
 
-    $scope.workingTabs = appConfig.WORKING_TABS;
+    layoutManager.createLayout('myLayout', $scope, $compile);
+    layoutManager.putLeft('explorer-block', 'Explorer');
+    layoutManager.putLeft('property-block', 'Properties');
 
-    /**
-     * debug working tabs
-     */
-    // $timeout(function () {
-    //     console.log($scope.workingTabs);
-    //     printLog();
-    // }, 5000);
-    //
-    // function printLog() {
-    //     $timeout(function () {
-    //         console.log($scope.workingTabs);
-    //         printLog();
-    //     }, 5000);
-    // }
+    wiComponentService.on('new-logplot-tab', function (title) {
+        layoutManager.putWiLogPlotRight('myLogPlot' + Date.now(), title);
+    });
 });
+
+function bindAll(handlers, $scope, wiComponentService) {
+    let newHandlers = {};
+    for (let handler in handlers) {
+        newHandlers[handler] = handlers[handler].bind({
+            $scope: $scope,
+            wiComponentService: wiComponentService
+        });
+    }
+
+    for (let handler in logplotHandlers) {
+        newHandlers[handler] = logplotHandlers[handler].bind({
+            $scope: $scope,
+            wiComponentService: wiComponentService
+        });
+    }
+
+    return newHandlers;
+}

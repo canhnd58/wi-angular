@@ -45,29 +45,48 @@ app.controller('WiDummy', function ($scope, wiComponentService) {
 const wiServiceName = 'wiComponentService';
 const moduleName = 'wi-component-service';
 
-var app = angular.module(moduleName, []);
-app.factory(wiServiceName, function() {
-    var __Controllers = new Object();
-    return { 
-        getComponent: function(componentName){
-            console.log("Do you want " + componentName + "'s controller?");
+let app = angular.module(moduleName, []);
+app.factory(wiServiceName, function () {
+    let __Controllers = {};
+    let handlers = {};
+
+    return {
+        treeFunctions: {},
+
+        getComponent: function (componentName) {
             return __Controllers[componentName];
         },
-        putComponent: function(componentName, controller) {
-            console.log("put component:" + componentName + " - ", controller); 
+        putComponent: function (componentName, controller) {
             __Controllers[componentName] = controller;
+        },
+
+        on: function (eventName, handlerCb) {
+            let eventHandlers = handlers[eventName];
+            if (!Array.isArray(eventHandlers)) {
+                handlers[eventName] = [];
+            }
+
+            handlers[eventName].push(handlerCb);
+        },
+        emit: function (eventName, data) {
+            let eventHandlers = handlers[eventName];
+            if (Array.isArray(eventHandlers)) {
+                eventHandlers.forEach(function (handler) {
+                    handler(data);
+                })
+            }
         }
     };
 });
 
 exports.name = moduleName;
-
 },{}],3:[function(require,module,exports){
 const componentName = 'wiList';
 const moduleName = 'wi-list';
 
 function Controller(wiComponentService) {
     let self = this;
+    this.expanded = true;
 
     this.$onInit = function() {
         if (self.name) wiComponentService.putComponent(self.name, self);
@@ -80,7 +99,7 @@ function Controller(wiComponentService) {
 
 let app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<p class="list-heading">{{wiList.heading}}</p><table><tr ng-repeat="item in wiList.items"><td>{{item.key}}</td><td>{{item.value}}</td></tr></table>',
+    template:'<div class="list-header-wrapper"><p class="list-heading">{{wiList.heading}}</p><i class="fa list-expanded" aria-hidden="true" ng-class="{\'fa-caret-down\' : wiList.expanded, \'fa-caret-right\' : !wiList.expanded}" ng-click="wiList.expanded = !wiList.expanded"></i></div><table ng-show="wiList.expanded"><tr ng-repeat="item in wiList.items"><td>{{item.key}}</td><td>{{item.value}}</td></tr></table>',
     controller: Controller,
     controllerAs: componentName,
     bindings: {

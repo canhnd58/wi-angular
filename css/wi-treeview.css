@@ -25,3 +25,7 @@ wi-treeview .wi-treeview-container .wi-parent-node:hover {
 wi-treeview .wi-treeview-container .wi-parent-node .icon-expanded {
   min-width: 8px;
 }
+wi-treeview .wi-treeview-container .item-active {
+  background-color: lightgray;
+  opacity: 0.7;
+}

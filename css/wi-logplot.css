@@ -1,18 +1,31 @@
 wi-logplot {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 wi-logplot .logplot-toolbar-wrapper {
-  border: 1px solid blue;
+  border: none;
 }
 wi-logplot .logplot-main-content {
-  border: 1px solid red;
   flex: 1;
   display: flex;
+  flex-direction: row;
 }
-wi-logplot .logplot-main-content wi-slidingbar {
-  width: 150px;
+wi-logplot .logplot-main-content .slidingbar {
+  width: 100px;
+  display: flex;
 }
-wi-logplot .logplot-main-content .logplot-sub-content {
+wi-logplot .logplot-main-content .track-area {
+  background-color: #fff;
+  margin: 4px;
+  padding: 4px;
   flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+wi-logplot .logplot-main-content .track-area wi-d3 {
+  width: 100%;
+  flex: 1;
+  display: flex;
 }

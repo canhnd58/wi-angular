@@ -1,0 +1,21 @@
+wi-explorer .filter-block {
+  display: flex;
+}
+wi-explorer .filter-block span {
+  margin: auto;
+}
+wi-explorer .filter-block input {
+  flex: 1;
+}
+wi-explorer .treeview-header {
+  position: relative;
+}
+wi-explorer .treeview-header .header-description {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100px;
+  text-align: right;
+  border-left: 1px dotted lightgray;
+}

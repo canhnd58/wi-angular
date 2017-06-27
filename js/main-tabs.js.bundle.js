@@ -1,9 +1,9 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-wiButton = require('./wi-button.js');
-wiToolbar = require('./wi-toolbar.js');
-wiTabs = require('./wi-tabs.js');
+let wiButton = require('./wi-button.js');
+let wiToolbar = require('./wi-toolbar.js');
+let wiTabs = require('./wi-tabs.js');
 
-var app = angular.module('helloapp', [wiButton.name, wiToolbar.name, wiTabs.name]);
+let app = angular.module('helloapp', [wiButton.name, wiToolbar.name, wiTabs.name]);
 app.controller('WiDummy', function ($scope) {
 
 });
@@ -54,7 +54,7 @@ const tabComponentName = 'wiTab';
 const moduleName = 'wi-tabs';
 
 function TabsetController() {
-    var self = this;
+    let self = this;
 
     this.tabs = [];
 
@@ -85,13 +85,13 @@ function TabsetController() {
     };
 
     function deactiveAllTabs(tabs) {
-        for (var i = 0; i < tabs.length; i++) {
+        for (let i = 0; i < tabs.length; i++) {
             tabs[i].active = false;
         }
     }
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(tabsetComponentName, {
     template:'<div><ul class="nav nav-tabs"><li class="wi-tab" ng-repeat="tab in wiTabset.tabs track by $index" ng-class="{\'active\': tab.active}" ng-click="wiTabset.selectTab($index)"><a>{{tab.heading}}</a> <i class="ti-close" ng-show="tab.closable == \'true\'" ng-click="wiTabset.closeTab($index)"></i></li></ul><div ng-transclude></div></div>',
     controller: TabsetController,
@@ -101,7 +101,7 @@ app.component(tabsetComponentName, {
 
 
 function TabController() {
-    var self = this;
+    let self = this;
 
     this.$onInit = function () {
         self.wiTabsetCtrl.addTab(self);
@@ -136,14 +136,12 @@ function Controller() {
         type: 'vertical',
         label: ''
     }
-
-
 }
 
 let app = angular.module(moduleName, []);
 
 app.component(name, {
-    template:'<div ng-transclude class="toolbar-{{wiToolbar.type || wiToolbar.default.type}}"></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p>',
+    template:'<div class="toolbar-wrapper"><div ng-transclude class="toolbar-{{wiToolbar.type || wiToolbar.default.type}}"></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p></div>',
     transclude: true,
     controller: Controller,
     controllerAs: name,
@@ -155,5 +153,4 @@ app.component(name, {
 });
 
 exports.name = moduleName;
-
 },{}]},{},[1]);

@@ -1,8 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-wiSlidingbar = require('./wi-slidingbar');
-wiComponentService = require('./wi-component-service');
+let wiSlidingbar = require('./wi-slidingbar');
+let wiComponentService = require('./wi-component-service');
 
-var app = angular.module('helloapp', [wiSlidingbar.name, wiComponentService.name]);
+let app = angular.module('helloapp', [wiSlidingbar.name, wiComponentService.name]);
 app.controller('WiDummy', function ($scope, wiComponentService) {
     $scope.getSlidingbarComponent = function () {
         $scope.wiSlidingbar = wiComponentService.getComponent('MySlidingBar1');
@@ -13,32 +13,51 @@ app.controller('WiDummy', function ($scope, wiComponentService) {
 const wiServiceName = 'wiComponentService';
 const moduleName = 'wi-component-service';
 
-var app = angular.module(moduleName, []);
-app.factory(wiServiceName, function() {
-    var __Controllers = new Object();
-    return { 
-        getComponent: function(componentName){
-            console.log("Do you want " + componentName + "'s controller?");
+let app = angular.module(moduleName, []);
+app.factory(wiServiceName, function () {
+    let __Controllers = {};
+    let handlers = {};
+
+    return {
+        treeFunctions: {},
+
+        getComponent: function (componentName) {
             return __Controllers[componentName];
         },
-        putComponent: function(componentName, controller) {
-            console.log("put component:" + componentName + " - ", controller); 
+        putComponent: function (componentName, controller) {
             __Controllers[componentName] = controller;
+        },
+
+        on: function (eventName, handlerCb) {
+            let eventHandlers = handlers[eventName];
+            if (!Array.isArray(eventHandlers)) {
+                handlers[eventName] = [];
+            }
+
+            handlers[eventName].push(handlerCb);
+        },
+        emit: function (eventName, data) {
+            let eventHandlers = handlers[eventName];
+            if (Array.isArray(eventHandlers)) {
+                eventHandlers.forEach(function (handler) {
+                    handler(data);
+                })
+            }
         }
     };
 });
 
 exports.name = moduleName;
-
 },{}],3:[function(require,module,exports){
 const componentName = 'wiSlidingbar';
 const moduleName = 'wi-slidingbar';
 
-const MIN_RANGE = 30;
+const MIN_RANGE = 5;
 
 function Controller($scope, wiComponentService) {
     let self = this;
-    self.tinyWindow = null;
+
+    this.tinyWindow = null;
     let parentHeight = 0;
     this.slidingBarState = {
         top: 0,
@@ -63,25 +82,30 @@ function Controller($scope, wiComponentService) {
 
     this.$onInit = function () {
         self.contentId = '#sliding-bar-content' + self.name;
-        self.handlerId = '#sliding-handle' + self.name;
+        self.handleId = '#sliding-handle' + self.name;
 
         if (self.name) wiComponentService.putComponent(self.name, self);
     };
 
     this.onReady = function () {
         parentHeight = parseInt($(self.contentId).height());
-        var initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
+        let initialHeight = Math.round(parentHeight * (MIN_RANGE) / 100);
 
         self.tinyWindow = {
-            height: initialHeight,
-            top: 0
+            top: (parentHeight - initialHeight * 4) * Math.random(),
+            height: initialHeight * 4
         };
 
-        // init tiny window height
-        $(self.handlerId).height(initialHeight);
-        self.tinyWindow.height = initialHeight;
 
-        $(self.handlerId).draggable({
+        // init tiny window height
+        $(self.handleId).height(self.tinyWindow.height);
+        console.log($(self.handleId));
+        $(self.handleId).css('top', self.tinyWindow.top + 'px');
+
+        self.slidingBarState.top = Math.round(self.tinyWindow.top / parentHeight * 100);
+        self.slidingBarState.range = Math.round(self.tinyWindow.height / parentHeight * 100);
+
+        $(self.handleId).draggable({
             axis: "y",
             containment: "parent"
         }).resizable({
@@ -90,27 +114,29 @@ function Controller($scope, wiComponentService) {
             handles: "n, s"
         });
 
-        $(self.handlerId).on("resize", function (event, ui) {
+        $(self.handleId).on("resize", function (event, ui) {
             update(ui);
         });
 
-        $(self.handlerId).on("drag", function (event, ui) {
+        $(self.handleId).on("drag", function (event, ui) {
             update(ui);
         });
     };
+    /*
+     this.setSlidingHandleHeight = function () {
+     console.log('set slidingHandleHeight');
+     parentHeight = parseInt($(self.contentId).height());
 
-    this.setSlidingHandleHeight = function () {
-        parentHeight = parseInt($(self.contentId).height());
-
-        var initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
-        $(self.handlerId).height(initialHeight);
-        self.tinyWindow.height = initialHeight;
-    }
+     let initialHeight = Math.round(parentHeight * MIN_RANGE / 100);
+     $(self.handleId).height(initialHeight);
+     self.tinyWindow.height = initialHeight;
+     }
+     */
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<div id="sliding-bar-content{{wiSlidingbar.name}}" class="sliding-bar-content" ng-transclude elem-ready="wiSlidingbar.onReady()"></div><div id="sliding-handle{{wiSlidingbar.name}}" class="ui-widget-content sliding-handle"><div class="sliding-handler-border"></div></div>',
+    template:'<div id="sliding-bar-content{{wiSlidingbar.name}}" class="sliding-bar-content" ng-transclude elem-ready="wiSlidingbar.onReady()"></div><div id="sliding-handle{{wiSlidingbar.name}}" class="ui-widget-content sliding-handle"><div class="sliding-handle-border"></div></div>',
     controller: Controller,
     controllerAs: componentName,
     transclude: true,
@@ -125,7 +151,7 @@ app.directive('elemReady', function ($parse) {
         link: function ($scope, elem, attrs) {
             elem.ready(function () {
                 $scope.$apply(function () {
-                    var func = $parse(attrs.elemReady);
+                    let func = $parse(attrs.elemReady);
                     func($scope);
                 })
             })

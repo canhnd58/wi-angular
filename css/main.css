@@ -1,3 +1,30 @@
+input:focus,
+button:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
 .wi-hidden {
   visibility: hidden;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 99%;
+  width: 100%;
+}
+#myLayout {
+  width: 100%;
+  flex: 1 1 auto;
+}
+.status-bar {
+  width: 100%;
+  min-height: 30px;
+}
+.ribbon-wrapper {
+  width: 100%;
+  min-height: 139px;
+}
+div.lm_content {
+  overflow-y: scroll;
 }

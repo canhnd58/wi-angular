@@ -1,12 +1,12 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-wiDropdown = require('./wi-dropdown');
-wiButton = require('./wi-button');
-wiComponentService = require('./wi-component-service');
+let wiDropdown = require('./wi-dropdown');
+let wiButton = require('./wi-button');
+let wiComponentService = require('./wi-component-service');
 
-var app = angular.module('helloapp', [wiDropdown.name, wiButton.name, wiComponentService.name]);
+let app = angular.module('helloapp', [wiDropdown.name, wiButton.name, wiComponentService.name]);
 app.controller('WiDummy', function($scope, wiComponentService) {
     $scope.myHandler = function () {
-        var dropdown1Controller = wiComponentService.getComponent('MyDropdown1');
+        let dropdown1Controller = wiComponentService.getComponent('MyDropdown1');
         dropdown1Controller.label = 'New Label';
     };
 });
@@ -55,29 +55,47 @@ exports.name = moduleName;
 const wiServiceName = 'wiComponentService';
 const moduleName = 'wi-component-service';
 
-var app = angular.module(moduleName, []);
-app.factory(wiServiceName, function() {
-    var __Controllers = new Object();
-    return { 
-        getComponent: function(componentName){
-            console.log("Do you want " + componentName + "'s controller?");
+let app = angular.module(moduleName, []);
+app.factory(wiServiceName, function () {
+    let __Controllers = {};
+    let handlers = {};
+
+    return {
+        treeFunctions: {},
+
+        getComponent: function (componentName) {
             return __Controllers[componentName];
         },
-        putComponent: function(componentName, controller) {
-            console.log("put component:" + componentName + " - ", controller); 
+        putComponent: function (componentName, controller) {
             __Controllers[componentName] = controller;
+        },
+
+        on: function (eventName, handlerCb) {
+            let eventHandlers = handlers[eventName];
+            if (!Array.isArray(eventHandlers)) {
+                handlers[eventName] = [];
+            }
+
+            handlers[eventName].push(handlerCb);
+        },
+        emit: function (eventName, data) {
+            let eventHandlers = handlers[eventName];
+            if (Array.isArray(eventHandlers)) {
+                eventHandlers.forEach(function (handler) {
+                    handler(data);
+                })
+            }
         }
     };
 });
 
 exports.name = moduleName;
-
 },{}],4:[function(require,module,exports){
 const componentName = 'wiDropdown';
 const moduleName = 'wi-dropdown';
 
 function Controller(wiComponentService) {
-    var self = this;
+    let self = this;
 
     this.default = {
         label: '',
@@ -91,10 +109,10 @@ function Controller(wiComponentService) {
 
     this.$onInit = function() {
         if (self.name) wiComponentService.putComponent(self.name, self);
-    }
+    };
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(componentName, {
     template:'<div class="dropdown"><button class="dropdown-toggle" type="button" data-toggle="dropdown" ng-click="wiDropdown.onClick()"><img class="{{wiDropdown.icon || wiDropdown.config.icon || wiDropdown.default.icon}}" alt="icon wi-dropdown"><div class="label-wrapper {{wiDropdown.layout || wiDropdown.config.layout || wiDropdown.default.layout}}"><span class="{{wiDropdown.layout || wiDropdown.config.layout || wiDropdown.default.layout}}" ng-show="wiDropdown.label || wiDropdown.config.label">{{wiDropdown.label || wiDropdown.config.label}}</span> <span class="caret"></span></div></button><ul class="dropdown-menu"><div ng-transclude></div></ul></div>',
     controller: Controller,

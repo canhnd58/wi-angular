@@ -2,26 +2,53 @@ wi-tabset {
   display: block;
   /* khu border */
 }
+wi-tabset .nav-tabs {
+  background: #c8c9d0;
+  padding: 5px 0 0 7px;
+  border-bottom: 1px solid #a8aab4;
+}
 wi-tabset wi-tab {
   display: block;
 }
+wi-tabset wi-tab > div {
+  border-bottom: 1px solid #a8aab4;
+  border-right: 1px solid #a8aab4;
+  border-left: 1px solid #a8aab4;
+  background: #ffffff;
+  background: -moz-linear-gradient(top, #ffffff 13%, #fafafc 42%, #f0f1f5 100%);
+  background: -webkit-gradient(left top, left bottom, color-stop(13%, #ffffff), color-stop(42%, #fafafc), color-stop(100%, #f0f1f5));
+  background: -webkit-linear-gradient(top, #ffffff 13%, #fafafc 42%, #f0f1f5 100%);
+  background: -o-linear-gradient(top, #ffffff 13%, #fafafc 42%, #f0f1f5 100%);
+  background: -ms-linear-gradient(top, #ffffff 13%, #fafafc 42%, #f0f1f5 100%);
+  background: linear-gradient(to bottom, #ffffff 13%, #fafafc 42%, #f0f1f5 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f0f1f5', GradientType=0);
+}
 wi-tabset li.wi-tab.active {
-  border: 1px solid #ddd;
+  border: 1px solid #a8aab4;
   border-bottom-color: transparent;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 3px -2px 2px -2px rgba(0, 0, 0, 0.13);
 }
 wi-tabset li.wi-tab.active > a,
 wi-tabset li.wi-tab > a:hover,
 wi-tabset li.wi-tab > a,
 wi-tabset li.wi-tab.active > a:hover {
   border: none;
+  font-weight: 700;
 }
 wi-tabset li.wi-tab {
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 5px 15px;
 }
 wi-tabset li.wi-tab > a {
   display: inline-block;
   padding: 0;
+  background: transparent;
+  color: #000;
+}
+wi-tabset li.wi-tab > a:hover {
+  background: none;
 }
 wi-tabset li.wi-tab > i {
   font-size: 50%;

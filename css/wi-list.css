@@ -12,7 +12,16 @@ th {
 tr:nth-child(even) {
   background-color: #dddddd;
 }
-.list-heading {
+.list-header-wrapper {
+  display: flex;
+  padding-right: 5px;
+}
+.list-header-wrapper .list-heading {
+  display: inline-block;
+  flex: 1;
   padding: 2px;
   margin: 0;
+}
+.list-header-wrapper .list-expanded {
+  cursor: pointer;
 }
