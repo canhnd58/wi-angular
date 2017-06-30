@@ -50,7 +50,8 @@ wi-toolbar-button p {
   margin: 0;
 }
 .button-normal {
-  padding: 10px;
+  padding: 2px 5px 5px 5px;
+  min-height: 70px;
 }
 .button-small {
   padding: 0px;

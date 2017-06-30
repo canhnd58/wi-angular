@@ -12,6 +12,125 @@ function roundUp(value, granularity) {
 function roundDown(value, granularity) {
     return Math.floor(value / granularity) * granularity;
 }
+
+function appendTrackHeader(container, trackName) {
+    container.append('div')
+        .attr('class', 'track-header text-center')
+            .append('label')
+            .attr('class', 'track-name text-center')
+                .text(trackName);
+}
+
+function appendDepthHeader(base, unit) {
+    var trackHeader = base.selectAll('.track-header');
+    trackHeader.append('label')
+        .attr('class', 'data-header double-height text-center')
+        .text(unit);
+}
+
+function appendToTrackHeader(base, dataSetName, unit, minVal, maxVal) {
+    var unitHeaderData = [minVal, unit, maxVal];
+    var trackHeader = base.selectAll('.track-header');
+    var temp = trackHeader.append('label')
+        .attr('class', 'data-header text-center')
+        .text(dataSetName);
+
+    trackHeader.append('label')
+        .attr('class', 'unit-header flex-row')
+        .selectAll('div').data(unitHeaderData).enter()
+            .append('div')
+                .attr('class', function(d, i) {
+                    switch(i) {
+                        case 0:
+                            return 'text-left';
+                        case 1:
+                            return 'flex-1 text-center';
+                        case 2:
+                            return 'text-right';
+                    }
+                    return '';
+                })
+                .text(function(d) { return d; });
+}
+
+function appendTrack(baseElement, trackName, plotWidth) {
+    var trackContainer = d3.select(baseElement).append('div')
+        .attr('class', 'track-container')
+        .style('width', plotWidth + 'px');
+    appendTrackHeader(trackContainer, trackName);
+    trackContainer.append('div')
+        .attr('class', 'plot-container');
+    return trackContainer;
+}
+
+function DepthTrack(config) {
+    var self = this;
+    var _viewportX = new Array(), _viewportY = new Array();
+    
+    if( !config ) {
+        console.error("config must not be null");
+        return;
+    }
+    var unit = config.unit || 'm';
+    var root;
+    var base;
+    var svg;
+    var clientRect;
+    var yAxisGroup;
+    var yAxisGroup1;
+    var transformY;
+    var yAxisClass = 'depthtrack';
+    var yNTicks = config.yNTicks || 20;
+    var plotWidth = config.plotWidth || 200;
+    var yStep = config.yStep || 1.0;
+    var yFormatter = d3.format(config.yFormatter || 'g');
+    var xPadding = config.xPadding || 0, yPadding = config.yPadding || 0;
+    this.getYStep = function() { 
+        return yStep; 
+    }
+    this.init = function(baseElement) {
+        root = appendTrack(baseElement, 'Depth', plotWidth);
+        base = root.select('.plot-container');
+        appendDepthHeader(root, unit);
+        clientRect = base.node().getBoundingClientRect();
+
+        svg = base.append('svg')
+                .attr('width', clientRect.width)
+                .attr('height', clientRect.height);
+        yAxisGroup = svg.append('g')
+            .attr('class', yAxisClass)
+            .attr('transform', 'translate(' + (clientRect.width - xPadding) + ', 0)');
+        yAxisGroup1 = svg.append('g')
+            .attr('class', yAxisClass);
+            //.attr('transform', 'translate(' + (clientRect.width - xPadding) + ', 0)');
+    }
+    function _doPlot() {
+        transformY = d3.scaleLinear().domain(_viewportY).range([yPadding, clientRect.height - yPadding]);
+        function setupAxes() {
+            var start = roundUp(_viewportY[0], yStep);
+            var end = roundDown(_viewportY[1], yStep);
+            var yAxis = d3.axisLeft(transformY)
+                .tickValues(d3.range(start, end, (end - start)/yNTicks))
+                .tickFormat(yFormatter)
+                .tickSize(5);
+            var yAxis1 = d3.axisRight(transformY)
+                .tickValues(d3.range(start, end, (end - start)/yNTicks))
+                .tickFormat('')
+                .tickSize(5);
+
+            yAxisGroup.call(yAxis);
+            yAxisGroup1.call(yAxis1);
+        }
+        setupAxes();
+    }
+    this.doPlot = function() {
+        _doPlot();
+    }
+    this.setYRange = function(vY) {
+        _viewportY[0] = vY[0];
+        _viewportY[1] = vY[1];
+    }
+}
 function Plot(config) {
     var self = this;
     var _data, _viewportX = new Array(), _viewportY = new Array();
@@ -19,6 +138,8 @@ function Plot(config) {
         console.error("config must not be null");
         return;
     }
+    var root;
+    var base;
     var svg;
     var clientRect;
     var translateOpts = new Object();
@@ -28,8 +149,8 @@ function Plot(config) {
     var transformY;
     var xAxisClass = 'grid', yAxisClass = 'grid';
     var xAxisPosition = config.xAxisPosition || 'top', yAxisPosition = config.yAxisPosition || 'left';
-    var xNTicks = config.xNTicks || 20;
-    var yNTicks = config.yNTicks || 4;
+    var xNTicks = config.xNTicks || 4;
+    var yNTicks = config.yNTicks || 20;
     var plotWidth = config.plotWidth || 200;
     var yStep = config.yStep || 1.0;
 
@@ -71,9 +192,8 @@ function Plot(config) {
         translateOpts.right = 'translate(' + (clientRect.width - xPadding) + ', 0)';
     }
     this.init = function(baseElement) {
-        var base = d3.select(baseElement).append('div')
-            .attr('class', 'plot-container')
-            .style('width', plotWidth + 'px');
+        root = appendTrack(baseElement, 'Track', plotWidth);
+        base = root.select('.plot-container');
         clientRect = base.node().getBoundingClientRect();
         updateTranslateOpts(translateOpts, clientRect);
 
@@ -124,7 +244,8 @@ function Plot(config) {
         function setupAxes() {
             var xAxis = axisCfg[xAxisPosition](transformX)
                 .tickValues(d3.range(_viewportX[0], _viewportX[1], (_viewportX[1] - _viewportX[0])/xNTicks))
-                .tickFormat(xFormatter)
+                //.tickFormat(xFormatter)
+                .tickFormat("")
                 .tickSize(-(clientRect.height - 2 * yPadding));
             var start = roundUp(_viewportY[0], yStep);
             var end = roundDown(_viewportY[1], yStep);
@@ -152,7 +273,7 @@ function Plot(config) {
             ctx.stroke();
         }
         setupAxes();
-        plotOnCanvas()
+        plotOnCanvas();
     }
     this.doPlot = function() {
         _doPlot();
@@ -229,7 +350,8 @@ function Plot(config) {
                 .on('mouseleave', null);
         }
     }
-    this.setData = function(data) {
+    this.setData = function(data, dataSetName, unit, min, max) {
+        appendToTrackHeader(root, dataSetName, unit, min, max);
         _data = data;
     }
     this.setYRange = function(vY) {
@@ -240,9 +362,11 @@ function Plot(config) {
         _viewportX[0] = vX[0];
         _viewportX[1] = vX[1];
     }
-    this.adjustXRange = function() {
+    this.adjustXRange = function(kFactor) {
         if( _data ) {
-            _viewportX = d3.extent(_data, function(d) { return d.x; });
+            var tempVport= d3.extent(_data, function(d) { return d.x; });
+            _viewportX[0] = 0;
+            _viewportX[1] = tempVport[1] * kFactor;
         }
     }
     const trackerLifetime = 10 * 1000; // 1 seconds
@@ -252,35 +376,40 @@ function Plot(config) {
     }
     registeredPlots.push(this);
 }
-exports.createLogPlot = function(config, domElem) {
+exports.createLogTrack = function(config, domElem) {
     var plot = new Plot(config);
     plot.init(domElem);
     return plot;
 }
+exports.createDepthTrack = function(config, domElem) {
+    var depthTrack = new DepthTrack(config);
+    depthTrack.init(domElem);
+    return depthTrack;
+}
 
 },{}],2:[function(require,module,exports){
-var wiD3 = require('./wi-d3.js');
-var wiComponentService = require('./wi-component-service');
-var graph = require('./graph.js');
+let graph = require('./graph.js');
+let wiD3 = require('./wi-d3.js');
+let wiComponentService = require('./wi-component-service');
 
-var app = angular.module('helloapp', [wiD3.name, wiComponentService.name]);
+let app = angular.module('helloapp', [wiD3.name, wiComponentService.name]);
 app.controller('WiDummy', function ($scope, wiComponentService) {
     wiComponentService.putComponent("GRAPH", graph);
-    console.log('Fuck');
+
+    $scope.doClick = function() {
+        let myPlot = wiComponentService.getComponent('myPlot');
+        let idx = myPlot.addTrack();
+        myPlot.setData(idx, genSamples(1000));
+        myPlot.setDepthRange([10, 100]);
+        myPlot.plotAll();
+    };
+
     function genSamples(nSamples) {
-        var samples = new Array();
+        let samples = [];
         for( let i = 0; i < nSamples; i++ ) {
             samples.push({y:i, x: Math.random()});
         }
         return samples;
-    }
-    $scope.doClick = function() {
-        console.log('Do click');
-        var myPlot = wiComponentService.getComponent('myPlot')
-        var idx = myPlot.addTrack();
-        myPlot.setData(idx, genSamples(1000));
-        myPlot.setDepthRange([10, 100]);
-        myPlot.plotAll();
     }
 });
 
@@ -327,62 +456,89 @@ exports.name = moduleName;
 const componentName = 'wiD3';
 const moduleName = 'wi-d3';
 
-var TRACK_CFG = {
+let TRACK_CFG = {
     xNTicks: 4,
     yNTicks: 10,
     xAxisPosition: 'top',
     xFormatter: '.2f',
     yFormatter: '.2f',
-    xPadding: 50,
-    yPadding: 1,
+    xPadding: 1,
+    yPadding: 5,
     yStep: 0.25,
-    plotWidth: 250 
-}
+    plotWidth: 120
+};
+
+let DTRACK_CFG = {
+    xNTicks: 4,
+    yNTicks: 10,
+    xAxisPosition: 'top',
+    xFormatter: '.2f',
+    yFormatter: '.2f',
+    xPadding: 1,
+    yPadding: 5,
+    yStep: 0.25,
+    plotWidth: 60
+};
 
 function Controller($scope, wiComponentService) {
-    var self = this;
-    console.log('wi-d3: Init');
-    var tracks = new Array();
-    this.addTrack = function() {
-        var graph = wiComponentService.getComponent('GRAPH');
-        var track = graph.createLogPlot(TRACK_CFG, document.getElementById(self.plotAreaId));
+    let self = this;
+    let tracks = [];
+
+    this.addTrack = function () {
+        let graph = wiComponentService.getComponent('GRAPH');
+        let track = graph.createLogTrack(TRACK_CFG, document.getElementById(self.plotAreaId));
         track.trackPointer(true);
-        var len = tracks.push(track);
+        let len = tracks.push(track);
 
         return len - 1;
-    }
-    this.setDepthRange = function(deepRange) {
-        tracks.forEach(function(track) {
+    };
+
+    this.addDepthTrack = function () {
+        let graph = wiComponentService.getComponent('GRAPH');
+        let track = graph.createDepthTrack(DTRACK_CFG, document.getElementById(self.plotAreaId));
+        let len = tracks.push(track);
+
+        return len - 1;
+    };
+
+    this.setDepthRange = function (deepRange) {
+        tracks.forEach(function (track) {
             track.setYRange(deepRange);
         });
-    }
-    this.getMaxDepth = function() {
-        return d3.max(tracks, function(track) { return track.getYMax();});
-    }
-    this.setData = function(trackIdx, data) {
-        tracks[trackIdx].setData(data);
-        tracks[trackIdx].adjustXRange();
-    }
-    this.plot = function(trackIdx) {
+    };
+
+    this.getMaxDepth = function () {
+        return d3.max(tracks, function (track) {
+            if (track.getYMax) return track.getYMax();
+            return -1;
+        });
+    };
+
+    this.setData = function (trackIdx, data) {
+        tracks[trackIdx].setData(data, 'Rock', 'm3', 0, 200);
+        tracks[trackIdx].adjustXRange(1);
+    };
+
+    this.plot = function (trackIdx) {
         tracks[trackIdx].doPlot();
-    }
-    this.plotAll = function() {
-        tracks.forEach(function(track) {
+    };
+
+    this.plotAll = function () {
+        tracks.forEach(function (track) {
             track.doPlot();
-            track.trackPointer(true);
-        } );
-    }
+            if (track.trackPointer) track.trackPointer(true);
+        });
+    };
+
     this.$onInit = function () {
-        console.log('wi-d3: onInit');
         self.plotAreaId = self.name + 'PlotArea';
         if (self.name) {
-            console.log('putComponent:', self.name);
             wiComponentService.putComponent(self.name, self);
         }
-    }
+    };
 }
 
-var app = angular.module(moduleName, []);
+let app = angular.module(moduleName, []);
 app.component(componentName, {
     template:'<div id="{{wiD3.plotAreaId}}" class="d3-region"></div>',
     controller: Controller,

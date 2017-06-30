@@ -1,14 +1,23 @@
 wi-toolbar {
   display: inline-block;
-  padding: 0 15px;
+  padding: 0 5px;
   border-right: 1px solid transparent;
   -moz-border-image: -moz-linear-gradient(to bottom, rgba(180, 182, 191, 0) 0%, #b4b6bf 51%, rgba(180, 182, 191, 0) 100%);
   -webkit-border-image: -webkit-linear-gradient(to bottom, rgba(180, 182, 191, 0) 0%, #b4b6bf 51%, rgba(180, 182, 191, 0) 100%);
   border-image: linear-gradient(to bottom, rgba(180, 182, 191, 0) 0%, #b4b6bf 51%, rgba(180, 182, 191, 0) 100%);
   border-image-slice: 1;
   margin-bottom: 0;
+  vertical-align: top;
 }
-wi-toolbar > div > .wi-toolbar-label {
+wi-toolbar > div.toolbar-vertical {
+  border-bottom: 1px solid transparent;
+  -moz-border-image: -moz-linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #d8d9df 49%, rgba(255, 255, 255, 0) 100%);
+  -webkit-border-image: -webkit-linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #d8d9df 49%, rgba(255, 255, 255, 0) 100%);
+  border-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #d8d9df 49%, rgba(255, 255, 255, 0) 100%);
+  border-image-slice: 1;
+  padding: 6px 0;
+}
+wi-toolbar > .wi-toolbar-label {
   padding: 0.2em;
   text-align: center;
   width: 100%;
@@ -19,18 +28,14 @@ wi-toolbar > div > .wi-toolbar-label {
   border-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 49%, rgba(255, 255, 255, 0) 100%);
   border-image-slice: 1;
   margin-bottom: 0;
+  font-size: 12px;
+}
+wi-toolbar .toolbar-vertical {
+  display: inline-block;
+}
+wi-toolbar .toolbar-horizontal > wi-button {
+  display: block;
 }
 wi-toolbar:nth-child(n+1) wi-dropdown:first-child {
   border: none;
-}
-.toolbar-wrapper > div {
-  border-bottom: 1px solid transparent;
-  -moz-border-image: -moz-linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #d8d9df 49%, rgba(255, 255, 255, 0) 100%);
-  -webkit-border-image: -webkit-linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #d8d9df 49%, rgba(255, 255, 255, 0) 100%);
-  border-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #d8d9df 49%, rgba(255, 255, 255, 0) 100%);
-  border-image-slice: 1;
-  padding: 6px 0;
-}
-.toolbar-wrapper .toolbar-horizontal > wi-button {
-  display: block;
 }

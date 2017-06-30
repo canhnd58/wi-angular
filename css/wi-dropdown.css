@@ -11,6 +11,7 @@ wi-dropdown button {
   border: none;
   font-size: 12px;
   border: 1px solid transparent;
+  padding: 5px;
 }
 wi-dropdown button:hover {
   border: 1px solid #b3b6ba;

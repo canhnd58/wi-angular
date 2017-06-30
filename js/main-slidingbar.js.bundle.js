@@ -52,7 +52,7 @@ exports.name = moduleName;
 const componentName = 'wiSlidingbar';
 const moduleName = 'wi-slidingbar';
 
-const MIN_RANGE = 5;
+const MIN_RANGE = 1;
 
 function Controller($scope, wiComponentService) {
     let self = this;
@@ -99,7 +99,6 @@ function Controller($scope, wiComponentService) {
 
         // init tiny window height
         $(self.handleId).height(self.tinyWindow.height);
-        console.log($(self.handleId));
         $(self.handleId).css('top', self.tinyWindow.top + 'px');
 
         self.slidingBarState.top = Math.round(self.tinyWindow.top / parentHeight * 100);

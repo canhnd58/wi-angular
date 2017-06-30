@@ -117,7 +117,8 @@ function ButtonController(wiComponentService) {
         type: 'normal',
         label: '',
         layout: 'icon-top',
-        icon: 'project-new-32x32'
+        icon: 'project-new-32x32',
+        disabled: false
     };
 
     this.onClick = function () {
@@ -125,13 +126,19 @@ function ButtonController(wiComponentService) {
     };
 
     this.$onInit = function() {
+        if (self.disabled === 'true'){
+            self.disabled = true;
+        } else {
+            self.disabled = self.default.disabled;
+        }
+
         if (self.name) wiComponentService.putComponent(self.name, self);
     }
 }
 
 let app = angular.module(moduleName, []);
 app.component(wiButtonName, {
-    template:'<div><button ng-click="wiButton.onClick()" class="button-{{wiButton.type || wiButton.config.type || wiButton.default.type}}"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
+    template:'<div><button ng-click="wiButton.onClick()" class="button-{{wiButton.type || wiButton.config.type || wiButton.default.type}}" ng-disabled="wiButton.disabled"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
     controller: ButtonController,
     controllerAs: wiButtonName,
     bindings: {
@@ -141,7 +148,8 @@ app.component(wiButtonName, {
         label: '@',
         layout: '@',
         icon: '@',
-        handler: '<'
+        handler: '<',
+        disabled: '@'
     }
 });
 
@@ -190,17 +198,19 @@ exports.name = moduleName;
 const componentName = 'wiExplorer';
 const moduleName = 'wi-explorer';
 
-function Controller(wiComponentService) {
+function Controller($scope, wiComponentService) {
     let self = this;
 
     this.$onInit = function () {
+        $scope.handlers = wiComponentService.getComponent('GLOBAL_HANDLERS');
+
         if (self.name) wiComponentService.putComponent(self.name, self);
     };
 }
 
 let app = angular.module(moduleName, []);
 app.component(componentName, {
-    template:'<wi-toolbar name="Toolbar" label icon><wi-button name="Button1Button" label icon="help-16x16" handler="handlers.Button1ButtonClicked"></wi-button><wi-button name="Button2Button" label icon="info-frp-16x16" handler="handlers.Button2ButtonClicked"></wi-button><wi-button name="Button3Button" label icon="project-new-16x16" handler="handlers.Button3ButtonClicked"></wi-button></wi-toolbar><div class="filter-block"><span>Filter:</span> <input type="text" placeholder="well or .../dataset or .../curve or ..."></div><div class="treeview-header"><span>Name</span> <span class="header-description">Unit</span></div><wi-treeview config="wiExplorer.treeConfig"></wi-treeview>',
+    template:'<wi-toolbar name="DatabasesToolbar" icon label layout description type><wi-button name="NewProjectButton" icon="project-new-32x32" label layout description type="small" handler="handlers.NewProjectButtonClicked"></wi-button><wi-button name="OpenProjectButton" icon="project-open-32x32" label layout description type="small" handler="handlers.OpenProjectButtonClicked"></wi-button><wi-button name="CloseProjectButton" icon="project-close-32x32" label layout description type="small" handler="handlers.CloseProjectButtonClicked"></wi-button></wi-toolbar><div class="filter-block"><span>Filter:</span> <input type="text" placeholder="well or .../dataset or .../curve or ..."></div><div class="label_treeview"><span>Name</span><span>Unit</span></div><wi-treeview config="wiExplorer.treeConfig"></wi-treeview>',
     controller: Controller,
     controllerAs: componentName,
     bindings: {
@@ -227,7 +237,7 @@ function Controller() {
 let app = angular.module(moduleName, []);
 
 app.component(name, {
-    template:'<div class="toolbar-wrapper"><div ng-transclude class="toolbar-{{wiToolbar.type || wiToolbar.default.type}}"></div><p class="wi-toolbar-label" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p></div>',
+    template:'<div class="toolbar-wrapper"><div ng-transclude class="toolbar-{{wiToolbar.type || wiToolbar.default.type}}"></div><p class="wi-toolbar-label text-center" ng-show="wiToolbar.label && wiToolbar.label.length > 0">{{wiToolbar.label}}</p></div>',
     transclude: true,
     controller: Controller,
     controllerAs: name,
@@ -243,7 +253,7 @@ exports.name = moduleName;
 const componentName = 'wiTreeview';
 const moduleName = 'wi-treeview';
 
-function Controller(wiComponentService) {
+function Controller($scope, wiComponentService) {
     let self = this;
 
     this.$onInit = function () {
@@ -255,21 +265,30 @@ function Controller(wiComponentService) {
     this.onClick = function ($index) {
         self.config[$index].data.childExpanded = !self.config[$index].data.childExpanded;
 
-        if (!self.config[$index].children || self.config[$index].children.length === 0)
-            wiComponentService.itemActiveName = self.config[$index].name;
+        if (!self.config[$index].children || self.config[$index].children.length === 0) {
+            let wiExplorerCtrl = wiComponentService.getComponent('WiExplorer');
+            wiExplorerCtrl.itemActiveName = self.config[$index].name;
+
+            wiComponentService.emit('update-properties', self.config[$index].data.properties);
+        }
     };
 
     this.onDoubleClick = function ($index) {
         if (self.config[$index].data.handler) {
             self.config[$index].data.handler();
-        } else if (wiComponentService.treeFunctions) {
-            // get func from component service
-            wiComponentService.treeFunctions[self.config[$index].type]();
+        } 
+        else {
+            let treeFunctions = wiComponentService.getComponent('TREE_FUNCTIONS');
+            if (treeFunctions) {
+                // get func from component service
+                treeFunctions[self.config[$index].type]();
+                //wiComponentService.treeFunctions[self.config[$index].type]();
+            }
         }
     };
 
     this.getItemActiveName = function () {
-        return wiComponentService.itemActiveName;
+        return wiComponentService.getComponent('WiExplorer').itemActiveName;
     };
 
     this.addItem = function (parentName, item) {
@@ -309,7 +328,6 @@ function Controller(wiComponentService) {
                 }
             }
         }
-
         return childSelect;
     }
 }

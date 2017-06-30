@@ -45,7 +45,8 @@ function ButtonController(wiComponentService) {
         type: 'normal',
         label: '',
         layout: 'icon-top',
-        icon: 'project-new-32x32'
+        icon: 'project-new-32x32',
+        disabled: false
     };
 
     this.onClick = function () {
@@ -53,13 +54,19 @@ function ButtonController(wiComponentService) {
     };
 
     this.$onInit = function() {
+        if (self.disabled === 'true'){
+            self.disabled = true;
+        } else {
+            self.disabled = self.default.disabled;
+        }
+
         if (self.name) wiComponentService.putComponent(self.name, self);
     }
 }
 
 let app = angular.module(moduleName, []);
 app.component(wiButtonName, {
-    template:'<div><button ng-click="wiButton.onClick()" class="button-{{wiButton.type || wiButton.config.type || wiButton.default.type}}"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
+    template:'<div><button ng-click="wiButton.onClick()" class="button-{{wiButton.type || wiButton.config.type || wiButton.default.type}}" ng-disabled="wiButton.disabled"><img class="{{wiButton.icon || wiButton.config.icon || wiButton.default.icon}}" alt="icon wi-button"><p class="{{wiButton.layout || wiButton.config.layout || wiButton.default.layout}}" ng-show="wiButton.label != null || wiButton.config.label != null">{{wiButton.label || wiButton.config.label || wiButton.default.label}}</p></button></div>',
     controller: ButtonController,
     controllerAs: wiButtonName,
     bindings: {
@@ -69,7 +76,8 @@ app.component(wiButtonName, {
         label: '@',
         layout: '@',
         icon: '@',
-        handler: '<'
+        handler: '<',
+        disabled: '@'
     }
 });
 

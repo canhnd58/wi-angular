@@ -1,7 +1,7 @@
 const componentName = 'wiTreeview';
 const moduleName = 'wi-treeview';
 
-function Controller(wiComponentService) {
+function Controller($scope, wiComponentService) {
     let self = this;
 
     this.$onInit = function () {
@@ -13,21 +13,30 @@ function Controller(wiComponentService) {
     this.onClick = function ($index) {
         self.config[$index].data.childExpanded = !self.config[$index].data.childExpanded;
 
-        if (!self.config[$index].children || self.config[$index].children.length === 0)
-            wiComponentService.itemActiveName = self.config[$index].name;
+        if (!self.config[$index].children || self.config[$index].children.length === 0) {
+            let wiExplorerCtrl = wiComponentService.getComponent('WiExplorer');
+            wiExplorerCtrl.itemActiveName = self.config[$index].name;
+
+            wiComponentService.emit('update-properties', self.config[$index].data.properties);
+        }
     };
 
     this.onDoubleClick = function ($index) {
         if (self.config[$index].data.handler) {
             self.config[$index].data.handler();
-        } else if (wiComponentService.treeFunctions) {
-            // get func from component service
-            wiComponentService.treeFunctions[self.config[$index].type]();
+        } 
+        else {
+            let treeFunctions = wiComponentService.getComponent('TREE_FUNCTIONS');
+            if (treeFunctions) {
+                // get func from component service
+                treeFunctions[self.config[$index].type]();
+                //wiComponentService.treeFunctions[self.config[$index].type]();
+            }
         }
     };
 
     this.getItemActiveName = function () {
-        return wiComponentService.itemActiveName;
+        return wiComponentService.getComponent('WiExplorer').itemActiveName;
     };
 
     this.addItem = function (parentName, item) {
@@ -67,7 +76,6 @@ function Controller(wiComponentService) {
                 }
             }
         }
-
         return childSelect;
     }
 }
