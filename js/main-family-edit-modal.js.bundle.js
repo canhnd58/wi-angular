@@ -416,16 +416,15 @@ exports.familyEditDialog = function(ModalService, callback) {
     });
 }
 },{}],2:[function(require,module,exports){
-// todo: write some services
 var DialogUtils = require('./DialogUtils');
 var app = angular.module('app', ['angularModalService']);
 
-app.controller('SampleController', ["$scope", "ModalService", function($scope, ModalService) {
+app.controller('SampleController', function($scope, ModalService) {
     $scope.show = function() {
-        // console.log(DialogUtils);
-        DialogUtils.newProjectDialog($scope, ModalService);
+        DialogUtils.familyEditDialog(ModalService, function(ret) {
+        	console.log(ret);
+        });
     }
-
-}]);
+});
 
 },{"./DialogUtils":1}]},{},[2]);

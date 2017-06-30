@@ -1,7 +1,6 @@
 /**
  * Created by cuong on 6/15/2017.
  */
-// var callConfirmDialog = required('./confirm/main-confirm-modal');
 exports.newProjectDialog = function ($scope, ModalService) {
     var self = this;
     console.log("new project dialog");
@@ -11,22 +10,27 @@ exports.newProjectDialog = function ($scope, ModalService) {
         };
 
         this.onOK = function () {
-            if (typeof $scope.name == 'undefined') {
-                var err = 'NewProject: Project Name is required!';
-                return {error: err};
-            } else if (typeof $scope.location == 'undefined') {
-                var err = 'NewProject: Location is required';
-                return {error: err};
-            } else {
-                return {
-                    name: $scope.name,
-                    location: $scope.location,
-                    company: $scope.company,
-                    department: $scope.department,
-                    description: $scope.description
-                }
-            }
+            // if (typeof $scope.name == 'undefined') {
+            //     var err = 'NewProject: Project Name is required!';
+            //     return {error: err};
+            // } else if (typeof $scope.location == 'undefined') {
+            //     var err = 'NewProject: Location is required';
+            //     return {error: err};
+            // } else {
+                // $scope.newProjectInfo{
+                //     name: $scope.projectName,
+                //     company: $scope.company,
+                //     department: $scope.department,
+                //     description: $scope.description
+                // }
+            // console.log($scope.newProjectInfo);
         }
+        // $http({
+        //     method : 'GET',
+        //     url : '54.255.212.141/'
+        // }).then(function newProject(req, res) {
+        //     $scope.newProjectInfo = req.data.projectInfo;
+        // });
     }
 
     ModalService.showModal({
@@ -334,17 +338,21 @@ exports.wellHeaderDialog = function(ModalService, callback) {
         });
     });
 }
-exports.depthConversionDialog = function(ModalService, callback) {
+exports.depthConversionDialog = function(ModalService, DialogUtils, callback) {
+    console.log(DialogUtils);
     function ModalController($scope, close) {
         this.close = function(ret) {
             close(ret);
         }
-        // this.run = function() {
-        //     callConfirmDialog.SampleController
-        // }
+        this.runClick = function(){
+            console.log("Click run");
+            DialogUtils.confirmDialog(ModalService, "Run ", "Project", function(ret) {
+                console.log(ret);
+            });
+        }
     }
     ModalService.showModal({
-        template:'<div class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" ng-click="wiModal.close()" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">&nbsp;Depth Conversion</h4></div><div class="modal-body"><form class="form-horizontal" name="modalAddNew"><div class="row"><div class="col-sm-7"><div class="form-group"><label class="control-label col-sm-5" for="well">Select well</label><div class="col-sm-7"><select ng-model="wiModal.selectWell" name="selectWell" ng-options="item for item in wiModal.selectWellList track by item" class="form-control"></select></div></div></div></div><div class="row"></div><div class="row"><div class="col-sm-7"><div class="form-group"><label class="control-label col-sm-5" for="step">Step</label><div class="col-sm-7"><input type="number" class="form-control" id="originalStep" name="step" ng-model="wiModal.originalStep"></div></div><div class="form-group"><label class="control-label col-sm-5" for="topDepth">Top Depth</label><div class="col-sm-7"><input type="number" class="form-control" id="originalTopDepth" name="topDepth" ng-model="wiModal.originalTopDepth"></div></div><div class="form-group"><label class="control-label col-sm-5" for="bottomDepth">Bottom Depth</label><div class="col-sm-7"><input type="number" class="form-control" id="originalBottomDepth" name="bottomDepth" ng-model="originalBottomDepth"></div></div></div><div class="col-sm-4"><div class="form-group"><input type="number" class="form-control" id="newStep" name="step" ng-model="newStep"></div><div class="form-group"><input type="number" class="form-control" id="newTopDepth" name="topDepth" ng-model="newTopDepth"></div><div class="form-group"><input type="number" class="form-control" id="newBottomDepth" name="bottomDepth" ng-model="newBottomDepth"></div><div class="areaWrap"><label><input type="radio" name="fixed" value="topFixed" ng-model="wiModal.fixed" ng-checked="true">&nbsp;Fixed Top</label><br><label><input type="radio" name="fixed" value="bottomFixed" ng-model="wiModal.fixed">&nbsp;Fixed Bottom</label> {{wiModal.fixed}}</div></div></div></form></div><div class="modal-footer"><button type="button" ng-click="wiModal.close()" class="btn btn-default" data-dismiss="modal"><span class="run-16x16"></span>&nbsp;Run</button> <button type="button" ng-click="wiModal.close(\'Cancel\')" class="btn btn-default" data-dismiss="modal"><span class="close-16x16"></span>&nbsp;Cancel</button></div></div></div></div>',
+        template:'<div class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" ng-click="wiModal.close()" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">&nbsp;Depth Conversion</h4></div><div class="modal-body"><form class="form-horizontal" name="modalAddNew"><div class="row"><div class="col-sm-7"><div class="form-group"><label class="control-label col-sm-5" for="well">Select well</label><div class="col-sm-7"><select ng-model="wiModal.selectWell" name="selectWell" ng-options="item for item in wiModal.selectWellList track by item" class="form-control"></select></div></div></div></div><div class="row"></div><div class="row"><div class="col-sm-7"><div class="form-group"><label class="control-label col-sm-5" for="step">Step</label><div class="col-sm-7"><input type="number" class="form-control" id="originalStep" name="step" ng-model="wiModal.originalStep"></div></div><div class="form-group"><label class="control-label col-sm-5" for="topDepth">Top Depth</label><div class="col-sm-7"><input type="number" class="form-control" id="originalTopDepth" name="topDepth" ng-model="wiModal.originalTopDepth"></div></div><div class="form-group"><label class="control-label col-sm-5" for="bottomDepth">Bottom Depth</label><div class="col-sm-7"><input type="number" class="form-control" id="originalBottomDepth" name="bottomDepth" ng-model="originalBottomDepth"></div></div></div><div class="col-sm-4"><div class="form-group"><input type="number" class="form-control" id="newStep" name="step" ng-model="newStep"></div><div class="form-group"><input type="number" class="form-control" id="newTopDepth" name="topDepth" ng-model="newTopDepth"></div><div class="form-group"><input type="number" class="form-control" id="newBottomDepth" name="bottomDepth" ng-model="newBottomDepth"></div><div class="areaWrap"><label><input type="radio" name="fixed" value="topFixed" ng-model="wiModal.fixed" ng-checked="true">&nbsp;Fixed Top</label><br><label><input type="radio" name="fixed" value="bottomFixed" ng-model="wiModal.fixed">&nbsp;Fixed Bottom</label> {{wiModal.fixed}}</div></div></div></form></div><div class="modal-footer"><button type="button" ng-click="wiModal.runClick()" class="btn btn-default"><span class="run-16x16"></span>&nbsp;Run</button> <button type="button" ng-click="wiModal.close(\'Cancel\')" class="btn btn-default" data-dismiss="modal"><span class="close-16x16"></span>&nbsp;Cancel</button></div></div></div></div>',
         controller : ModalController,
         controllerAs : "wiModal"
     }).then(function(modal) {
@@ -359,125 +367,44 @@ exports.depthConversionDialog = function(ModalService, callback) {
 
 exports.curveAliasDialog = function(ModalService, callback) {
     function ModalController($scope, close) {
-        this.curveAlias = "none";
-        this.dataCurveName = {};
-        this.dataCurveName = {
-            "1" : {
-                "alias" : "",
-                "selectedName" : [
-                {
-                    "Name" : "Name1",
-                    "selected" : true
-                },
-                {
-                    "Name" : "Name2",
-                    "selected" : false
-                },
-                {
-                    "Name" : "Name3",
-                    "selected" : false
-                }
-                ]
-            },
-            "2" : {
-                "alias" : "",
-                "selectedName" : [
-                {
-                    "Name" : "Name1",
-                    "selected" : false
-                },
-                {
-                    "Name" : "Name2",
-                    "selected" : true
-                },
-                {
-                    "Name" : "Name3",
-                    "selected" : false
-                }
-                ]
-            },
-            "3" : {
-                "alias" : "",
-                "selectedName" : [
-                {
-                    "Name" : "Name1",
-                    "selected" : false
-                },
-                {
-                    "Name" : "Name2",
-                    "selected" : false
-                },
-                {
-                    "Name" : "Name3",
-                    "selected" : true
-                }
-                ]
-            }
+        this.addCurveName = function(curveAlias){
+
         }
-        this.dataFamilyName = {
-            "Family1" : {
-                "alias" : "",
-                "selectedName" : [
-                {
-                    "Name" : "Name1",
-                    "selected" : true
-                },
-                {
-                    "Name" : "Name2",
-                    "selected" : false
-                },
-                {
-                    "Name" : "Name3",
-                    "selected" : false
-                }
-                ]
-            },
-            "Family2" : {
-                "alias" : "",
-                "selectedName" : [
-                {
-                    "Name" : "Name4",
-                    "selected" : false
-                },
-                {
-                    "Name" : "Name5",
-                    "selected" : true
-                },
-                {
-                    "Name" : "Name6",
-                    "selected" : false
-                }
-                ]
-            },
-            "Family3" : {
-                "alias" : "",
-                "selectedName" : [
-                {
-                    "Name" : "Name7",
-                    "selected" : false
-                },
-                {
-                    "Name" : "Name8",
-                    "selected" : false
-                },
-                {
-                    "Name" : "Name9",
-                    "selected" : true
-                }
-                ]
-            }
-        }           
-        // this.addRowCurve = function() {
-        //     this.dataCurveName.push()
-        // }
+        this.isSelected = function(item) {
+            console.log(item);
+            return "";
+        }
+        
+        
         this.close = function(ret) {
             close(ret);
         }
     }
     ModalService.showModal({
-        template:'<div class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" ng-click="wiModal.close(\'Cancel\')" data-dismiss="modal" aria-hidden="true">&times;</button><h4><span class="curve-header-edit-16x16"></span>&nbsp;Curve Alias</h4></div><div class="modal-body"><form class="form-horizontal" name="modalCurveAlias"><h5>Alias by</h5><div class="areaWrap"><label class="radio-inline"><input type="radio" name="curve" value="none" ng-model="wiModal.curveAlias" ng-checked="true">&nbsp;None</label><br><label class="radio-inline"><input type="radio" name="curve" value="curveName" ng-model="wiModal.curveAlias">&nbsp;Curve name</label><br><label class="radio-inline"><input type="radio" name="curve" value="familyName" ng-model="wiModal.curveAlias">&nbsp;Family name</label> {{wiModal.curveAlias}}</div><div ng-switch="wiModal.curveAlias"><div ng-switch-when="none"><div class="noneArea fixedHeight"><div class="row"><div class="col-sm-5 text-center"><p>Name</p></div><div class="col-sm-7 text-center"><p>Alias</p></div></div></div></div><div ng-switch-when="curveName"><div class="curveNameArea fixedHeight"><div class="checkbox"><label><input type="checkbox">Use Search Option</label></div><table class="table"><thead><tr><td>Name</td><td>Alias</td></tr></thead><tbody><tr ng-repeat="(key, value) in wiModal.dataCurveName"><td><select ng-model="selectName" class="form-control"><option ng-repeat="selectName in value.selectedName">{{ selectName.Name }}</option></select></td><td><input type="text" name="alias" ng-model="value.alias" class="form-control"></td></tr></tbody></table></div></div><div ng-switch-when="familyName"><div class="familyNameArea fixedHeight"><table class="table"><thead><tr><td>Name</td><td>Alias</td></tr></thead><tbody><tr ng-repeat="(key, value) in wiModal.dataFamilyName"><td><select ng-model="selectName" class="form-control"><option ng-repeat="selectName in value.selectedName">{{ selectName.Name }}</option></select></td><td><input type="text" name="alias" ng-model="value.alias" class="form-control"></td></tr></tbody></table></div></div></div></form></div><div class="modal-footer"><button class="btn btn-default" ng-click="wiModal.close()"><span class="ok-16x16"></span>Ok</button> <button class="btn btn-default" ng-click="wiModal.close()"><span class="cancel-16x16"></span>Cancel</button></div></div></div></div>',
+        template:'<div class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" ng-click="wiModal.close(\'Cancel\')" data-dismiss="modal" aria-hidden="true">&times;</button><h4><span class="curve-header-edit-16x16"></span>&nbsp;Curve Alias</h4></div><div class="modal-body"><form class="form-horizontal" name="modalCurveAlias"><h5>Alias by</h5><div class="areaWrap text-center"><label class="radio-inline"><input type="radio" name="curve" value="none" ng-model="wiModal.curveAlias" ng-checked="true">&nbsp;None</label> <label class="radio-inline"><input type="radio" name="curve" value="curveName" ng-model="wiModal.curveAlias">&nbsp;Curve name</label> <label class="radio-inline"><input type="radio" name="curve" value="familyName" ng-model="wiModal.curveAlias">&nbsp;Family name</label></div><div ng-switch="wiModal.curveAlias"><div ng-switch-when="none"><div class="noneArea fixedHeight"><div class="row"><div class="col-sm-5 text-center"><p>Name</p></div><div class="col-sm-7 text-center"><p>Alias</p></div></div></div></div><div ng-switch-when="curveName"><div class="curveNameArea fixedHeight"><div class="checkbox"><label><input type="checkbox">Use Search Option</label></div></div></div></div></form></div><div class="modal-footer"><button class="btn btn-default" ng-click="wiModal.close()"><span class="ok-16x16"></span>Ok</button> <button class="btn btn-default" ng-click="wiModal.close()"><span class="cancel-16x16"></span>Cancel</button></div></div></div></div>',
         controller : ModalController,
         controllerAs : "wiModal"
+    }).then(function(modal) {
+        modal.element.modal();
+        modal.close.then(function(ret) {
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+            callback(ret);
+        });
+    });
+}
+
+exports.familyEditDialog = function(ModalService, callback) {
+    function ModalController($scope, close) {
+        this.close = function(ret) {
+            close(ret);
+        }
+    }
+
+    ModalService.showModal({
+        template:'<div class="modal fade"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" ng-click="wiModal.close()" data-dismiss="modal" aria-hidden="true">&times;</button><h4><span class="curve-header-edit-16x16"></span>&nbsp;Family Edit</h4></div><div class="modal-body"><table class="table"><thead><tr><td>Dataset Name</td><td>Curve Name</td><td>Family</td><td>Unit</td></tr></thead><tbody><tr><td><select class="form-control" ng-model="datasetName"><option ng-repeat></option></select></td><td><select class="form-control" ng-model="datasetName"><option ng-repeat></option></select></td><td><select class="form-control" ng-model="datasetName"><option ng-repeat></option></select></td><td><input type="text" class="form-control"></td></tr></tbody></table></div><div class="modal-footer"><button class="btn btn-default" ng-click="wiModal.close()"><span class="ok-16x16"></span>Ok</button> <button class="btn btn-default" ng-click="wiModal.close()"><span class="cancel-16x16"></span>Cancel</button></div></div></div></div>',
+        controller: ModalController,
+        controllerAs: "wiModal"
     }).then(function(modal) {
         modal.element.modal();
         modal.close.then(function(ret) {
