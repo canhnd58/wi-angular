@@ -53,8 +53,6 @@ function LogTrack(config) {
     this.minY = config.minY;
     this.maxY = config.maxY;
 
-    this.xPadding = config.xPadding || 1;
-    this.yPadding = config.yPadding || 5;
     this.xDecimal = (config.xDecimal == null) ? 2 : config.xDecimal;
     this.yDecimal = (config.yDecimal == null) ? 2 : config.yDecimal;
     this.scale = config.scale || 'linear';
@@ -247,13 +245,11 @@ LogTrack.prototype.init = function(baseElement) {
     this.axisContainer = this.plotContainer.append('svg')
         .attr('class', 'vi-track-drawing')
         .style('cursor', 'crosshair')
-        .style('position', 'absolute')
         .style('overflow', 'visible');
 
     this.svgContainer = this.plotContainer.append('svg')
         .attr('class', 'vi-track-drawing vi-track-svg-container')
         .style('cursor', 'crosshair')
-        .style('position', 'absolute')
         .style('overflow', 'visible');
 
     this.xAxisGroup = this.axisContainer.append('g')
@@ -269,8 +265,6 @@ LogTrack.prototype.init = function(baseElement) {
  */
 LogTrack.prototype.doPlot = function(highlight) {
     Track.prototype.doPlot.call(this, highlight);
-    this.updateHeader();
-    this.updateBody();
     this.plotAllDrawings();
     this.updateAxis();
 }
@@ -700,9 +694,7 @@ LogTrack.prototype.updateAxis = function() {
 }
 
 LogTrack.prototype.updateHeader = function() {
-    this.headerNameBlock
-        .style('display', this.showTitle ? 'block': 'none')
-        .text(this.name);
+    Track.prototype.updateHeader.call(this);
 }
 
 LogTrack.prototype.updateBody = function() {

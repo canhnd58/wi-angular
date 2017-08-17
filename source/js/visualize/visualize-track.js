@@ -24,6 +24,9 @@ function Track(config) {
     this.type = config.type || Utils.pascalCaseToLowerDash(this.constructor.name);
     this.justification = config.justification || 'center';
     this.showTitle = (config.showTitle == null) ? true : config.showTitle;
+
+    this.xPadding = config.xPadding || 1;
+    this.yPadding = config.yPadding || 5;
 }
 
 /**
@@ -271,6 +274,9 @@ Track.prototype.doPlot = function(highlight) {
     this.setBackgroundColor(this.bgColor);
     if (highlight && (typeof this.highlightCallback == 'function'))
         this.highlightCallback();
+
+    this.updateHeader();
+    this.updateBody();
 }
 
 /**
@@ -286,5 +292,32 @@ Track.prototype.getDecimalFormatter = function(decimal) {
  */
 Track.prototype.on = function(type, cb) {
     this.trackContainer.on(type, cb);
+}
+
+/**
+ * Update header container
+ */
+Track.prototype.updateHeader = function() {
+    this.headerNameBlock
+        .style('display', this.showTitle ? 'block': 'none')
+        .style('text-align', this.justification)
+        .text(this.name);
+}
+
+/**
+ * Update body container
+ */
+Track.prototype.updateBody = function() {
+    let rect = this.plotContainer
+        .style('top', this.yPadding + 'px')
+        .style('bottom', this.yPadding + 'px')
+        .style('left', this.xPadding + 'px')
+        .style('right', this.xPadding + 'px')
+        .node()
+        .getBoundingClientRect();
+
+    this.plotContainer.selectAll('.vi-track-drawing')
+        .attr('width', rect.width)
+        .attr('height', rect.height);
 }
 

@@ -40,9 +40,6 @@ function DepthTrack(config) {
     this.yTicks = config.yTicks || 10;
     this.yDecimal = (config.decimal == null) ? 2 : config.decimal;
 
-    this.xPadding = config.xPadding || 1;
-    this.yPadding = config.yPadding || 5;
-
     this.MIN_WIDTH = 60;
 }
 
@@ -69,7 +66,6 @@ DepthTrack.prototype.init = function(baseElement) {
 
     this.svgContainer = this.plotContainer.append('svg')
         .attr('class', 'vi-track-drawing')
-        .style('position', 'absolute')
         .style('overflow', 'visible');
 
     this.yAxisGroupLeft = this.svgContainer.append('g')
@@ -89,10 +85,9 @@ DepthTrack.prototype.init = function(baseElement) {
  * @param {Boolean} [highlight] - Indicate whether to call highlight callback
  */
 DepthTrack.prototype.doPlot = function(highlight) {
-    let self = this;
-    this.updateHeader();
-    this.updateBody();
+    Track.prototype.doPlot.call(this, highlight);
 
+    let self = this;
     let windowY = this.getWindowY();
     let rect = this.plotContainer
         .node()
@@ -116,8 +111,6 @@ DepthTrack.prototype.doPlot = function(highlight) {
 
     this.yAxisGroupRight.call(yAxisRight);
     this.yAxisGroupLeft.call(yAxisLeft);
-
-    Track.prototype.doPlot.call(this, highlight);
 }
 
 /**
@@ -134,8 +127,8 @@ DepthTrack.prototype.onMouseDown = function(mouseDownCallback) {
  * Update track header
  */
 DepthTrack.prototype.updateHeader = function() {
-    this.headerNameBlock
-        .text(this.name);
+    Track.prototype.updateHeader.call(this);
+
     this.drawingHeaderContainer.select('.vi-track-unit')
         .text(this.unit);
 }
@@ -144,18 +137,7 @@ DepthTrack.prototype.updateHeader = function() {
  * Update body container
  */
 DepthTrack.prototype.updateBody = function() {
-    let rect = this.plotContainer
-        .style('top', this.yPadding + 'px')
-        .style('bottom', this.yPadding + 'px')
-        .style('left', this.xPadding + 'px')
-        .style('right', this.xPadding + 'px')
-        .node()
-        .getBoundingClientRect();
-
-    this.plotContainer
-        .selectAll('.vi-track-drawing')
-        .attr('width', rect.width)
-        .attr('height', rect.height);
+    Track.prototype.updateBody.call(this);
 
     this.yAxisGroupRight
         .style('transform', 'translateX(' + rect.width + 'px)');
